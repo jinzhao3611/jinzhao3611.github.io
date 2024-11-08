@@ -6,11 +6,9 @@ permalink: /about/
 ---
 
 ---
-<span style="font-size:1em">**Jingxuan Tu**</span>
+<span style="font-size:1em">**Jin Zhao**</span>
 
-I am a Ph.D candidate at Brandeis University working 
-with Professor Nianwen Xue, where I study computational science, 
-specifically in natural language processing and computational linguistics. 
+I am a Ph.D. candidate at Brandeis University, advised by Professor Nianwen Xue, in computational science with a focus on natural language processing and computational linguistics.  
 
 <span style="font-size:0.8em">**Email**: jinzhao at brandeis dot edu</span><br/>
 <span style="font-size:0.8em">**Address**: Volen Center for Complex Systems 109,
