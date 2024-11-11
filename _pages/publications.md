@@ -7,8 +7,8 @@ classes: wide
 ---
 
 <span style="font-size:0.8em"> - **Jin Zhao**, Jingxuan Tu, Han Du, and Nianwen Xue. 
-[Media Attitude Detection via Framing Analysis with Events and their Relations.](https://2024.emnlp.org/)
-_In Proceedings of the EMNLP 2024_. (to appear) </span><br/>
+[Media Attitude Detection via Framing Analysis with Events and their Relations.](https://aclanthology.org/2024.emnlp-main.954/)
+_Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing.  </span><br/>
 
 <span style="font-size:0.8em"> - Haibo Sun, Nianwen Xue, **Jin Zhao**, et al. 
 [Building a Broad Infrastructure for Uniform Meaning Representations](https://aclanthology.org/2024.lrec-main.229)
