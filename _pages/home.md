@@ -18,7 +18,7 @@ In addition to research, I serve as a teaching assistant in NLP courses and is a
 <span style="font-size:0.8em">**Email**: jinzhao at brandeis dot edu</span><br/>
 <span style="font-size:0.8em">**Address**: Volen Center for Complex Systems 109,
 Brandeis University, 415 South St.
-Waltham, MA 02454</span>
+Waltham, MA 02453</span>
 
 
 
