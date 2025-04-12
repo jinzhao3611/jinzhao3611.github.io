@@ -10,6 +10,8 @@ main:
      url: /pub/
    - title: "Service"
      url: /service/
+   - title: "Gallery" 
+     url: /gallery/
 #  - title: "Application"
 #      url: /app/
    - title: "About"
