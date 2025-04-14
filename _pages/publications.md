@@ -6,6 +6,10 @@ permalink: /pub/
 classes: wide
 ---
 
+<span style="font-size:0.8em"> - **Jin Zhao**, Jingxuan Tu, Bingyang Ye, Xinrui Hu, Nianwen Xue and James Pustejovsky. 
+[Beyond Benchmarks: Building a Richer Cross-Document Event Coreference Dataset with Decontextualization.]()
+_Proceedings of the 2025 Annual Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics_. (To Appear) </span><br/>
+
 <span style="font-size:0.8em"> - **Jin Zhao**, Jingxuan Tu, Han Du, and Nianwen Xue. 
 [Media Attitude Detection via Framing Analysis with Events and their Relations.](https://aclanthology.org/2024.emnlp-main.954/)
 _Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing_.  </span><br/>
