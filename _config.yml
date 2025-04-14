@@ -26,6 +26,7 @@ baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "jinzhao3611/jinzhao.github.io"
 teaser                   : # "/assets/images/brandeis.png"
 logo                     : "/assets/images/logo.png"
+favicon                  : "/assets/favicon/favicon.ico"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
 # breadcrumbs            : false # true, false (default)
 words_per_minute         : 170
@@ -105,6 +106,15 @@ author:
     - label: "Website"
       icon: "fas fa-fw fa-link"
       # url: "https://jinzhao3611.github.io/"
+    # - label: "Google Scholar"
+    #   icon: "fas fa-fw fa-graduation-cap"
+    #   url: "https://scholar.google.com/citations?user=REPLACE_WITH_YOUR_ID"
+    - label: "ACL Anthology"
+      icon: "fas fa-fw fa-book"
+      url: "https://aclanthology.org/people/j/jin-zhao/"
+    - label: "LinkedIn"
+      icon: "fab fa-fw fa-linkedin"
+      url: "https://www.linkedin.com/in/jin-zhao-893290338/"
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       # url: "https://twitter.com/"
