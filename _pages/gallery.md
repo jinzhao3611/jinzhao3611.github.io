@@ -11,6 +11,15 @@ This page showcases some moments from my academic journey, including conference 
 
 <div class="gallery">
  <figure>
+    <img src="/assets/images/gallery/research_award.jpg" alt="research retreat">
+    <figcaption>Receiving 2024 Computer Science Outstanding Research Award at Brandeis University Research Retreat.</figcaption>
+  </figure>
+  <figure>
+    <img src="/assets/images/gallery/naacl.jpg" alt="Albuquerque Conference Presentation">
+    <figcaption>Presenting event coreference research paper at NAACL 2025 at Alburquerque.</figcaption>
+  </figure>
+
+ <figure>
     <img src="/assets/images/gallery/3mt_award.jpg" alt="3mt Competition">
     <figcaption>Receiving the People's Choice Award at the Three Minute Thesis (3MT) competition 2025.</figcaption>
   </figure>
