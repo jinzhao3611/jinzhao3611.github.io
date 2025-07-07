@@ -12,6 +12,8 @@ main:
      url: /service/
    - title: "Gallery" 
      url: /gallery/
+   - title: "News"
+     url: /news/
 #  - title: "Application"
 #      url: /app/
    - title: "About"
