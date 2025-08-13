@@ -5,6 +5,7 @@ author_profile: true
 permalink: /service/
 classes: wide
 ---
+<span style="font-size:0.8em"> - Session Chair of [ACL 2025](https://2025.aclweb.org/) </span><br/>
 <span style="font-size:0.8em"> - Student Research Workshop Chair of [ACL 2025](https://2025.aclweb.org/organization/) </span><br/>
 <span style="font-size:0.8em"> - Reviewer of [ACL Rolling Review (ARR)](https://aclrollingreview.org/) (Dec 2024 - present) </span><br/>
 <span style="font-size:0.8em"> - Reviewer of [Text2Story 2025](https://text2story25.inesctec.pt/) </span><br/>

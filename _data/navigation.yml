@@ -8,15 +8,17 @@ main:
 #     url: /_posts/
    - title: "Publications"
      url: /pub/
-   - title: "Service"
-     url: /service/
+   - title: "About"
+     url: /about/
+
    - title: "Gallery" 
      url: /gallery/
    - title: "News"
      url: /news/
+   - title: "Service"
+     url: /service/
 #  - title: "Application"
 #      url: /app/
-   - title: "About"
-     url: /about/
+
   # - title: "Sitemap"
   #   url: /sitemap/
