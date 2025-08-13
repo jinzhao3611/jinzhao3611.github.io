@@ -10,7 +10,12 @@ author_profile: true
 This page showcases some moments from my academic journey, including conference presentations and awards.
 
 <div class="gallery">
- <figure>
+    <figure>
+     <img src="/assets/images/gallery/acl_2025.jpg" alt="ACL 2025 SRW Chair in Vienna">
+     <figcaption>Student Research Workshop Chair at ACL 2025 in Vienna. <a href="https://2025.aclweb.org/organization/">Organizing committee</a>.</figcaption>
+   </figure>
+
+  <figure>
     <img src="/assets/images/gallery/research_award.jpg" alt="research retreat">
     <figcaption>Receiving 2024 Computer Science Outstanding Research Award at Brandeis University Research Retreat.</figcaption>
   </figure>
