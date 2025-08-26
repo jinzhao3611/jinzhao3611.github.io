@@ -9,9 +9,9 @@ author_profile: true
 
 ### 2025
 
-**ACL 2025 Student Research Workshop Chair**  
-Served as one of the Student Research Workshop Chairs for the Association for Computational Linguistics (ACL) 2025 annual meeting.  
-[View organizing committee →](https://2025.aclweb.org/organization/)
+**"In 2025 Three Minute Thesis Competition, Students Bring Research to Wide Audience With Concision and Flair"** - *Brandeis Graduate School of Arts and Sciences*  
+Coverage of the Three Minute Thesis competition; I received the People's Choice Award.  
+[Read the article →](https://www.brandeis.edu/gsas/news/news-stories/3mt-2025.html)
 
 
 **"Geeking Out With Jin Zhao"** - *Brandeis Graduate School of Arts and Sciences*  
