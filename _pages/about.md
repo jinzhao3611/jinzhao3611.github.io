@@ -9,7 +9,7 @@ permalink: /about/
 <span style="font-size:1em">**Jin Zhao**</span>
 
 I am a researcher, writer, and curious observer of how stories shape our world.
-My work sits at the intersection of natural language processing, computational framing, and communication studies. I study how the same events can be described in profoundly different ways — not because the facts change, but because the framing does.
+My work sits at the intersection of natural language processing, computational framing, and communication studies. I study how the same events can be described in profoundly different ways, not because the facts change, but because the framing does.
 
 Through my research on framing-aware event coreference and framing-aware causality, I develop computational tools to uncover these subtle shifts in language, revealing how narratives diverge across media, cultures, and communities. For me, this is about understanding how the words we choose can unite, divide, or transform perspectives.
 
