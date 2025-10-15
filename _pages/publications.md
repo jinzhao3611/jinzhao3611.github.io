@@ -8,9 +8,9 @@ classes: wide
 
 <span style="font-size:0.8em"> - **Jin Zhao**, Xinrui Hu, and Nianwen Xue. [Seeing the Same Story Differently: Framing-Divergent Event Coreference for Computational Framing Analysis](). _Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing_, to appear. </span><br/>
 
-<span style="font-size:0.8em"> - **Jin Zhao**, Jingxuan Tu, Bingyang Ye, Xinrui Hu, Nianwen Xue and James Pustejovsky. 
+<span style="font-size:0.8em"> - **Jin Zhao**, Jingxuan Tu, Bingyang Ye, Xinrui Hu, Nianwen Xue and James Pustejovsky.
 [Beyond Benchmarks: Building a Richer Cross-Document Event Coreference Dataset with Decontextualization.]()
-_Proceedings of the 2025 Annual Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics_, Oral Presentation </span><br/>
+_Proceedings of the 2025 Annual Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics_, [Oral Presentation](https://us06web.zoom.us/rec/play/AS20xCHz7T35m96Va07iApHBOXC4wh7-jo3wQcuUcDY3Zfj6hEbetaX9UyXQ1WtWsU87udpnjGsy3YMG.O1svjUF8LNvts9wo?accessLevel=meeting&canPlayFromShare=true&from=share_recording_detail&continueMode=true&componentName=rec-play&originRequestUrl=https%3A%2F%2Fus06web.zoom.us%2Frec%2Fshare%2Fw0fUnIhvTqMk5mBAw3-SfLJhHjQ4FGLxRe9beD1TJ_RVInRFKLfzY7nXnmAGSQtn.4nncONiha1DDSPE2) </span><br/>
 
 <span style="font-size:0.8em"> - **Jin Zhao**, Jingxuan Tu, Han Du, and Nianwen Xue. 
 [Media Attitude Detection via Framing Analysis with Events and their Relations.](https://aclanthology.org/2024.emnlp-main.954/)
