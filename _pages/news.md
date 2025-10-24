@@ -14,7 +14,7 @@ Keynote speakers for "The Power of Data".
 
 **Science Pizza Talk at Waltham High School** - *MRSEC Science Outreach* (October 23, 2025)
 Invited speaker for the Science Pizza Talk series. Part of the 10-year MRSEC partnership with Waltham High School.
-*YouTube video forthcoming*
+[YouTube Link →](https://www.youtube.com/watch?v=thMeYJCS674)
 
 **"Geeking Out With Jin Zhao"** - *Brandeis Graduate School of Arts and Sciences* (June 2, 2025)
 Featured student profile discussing my research on news framing analysis using Natural Language Processing and my People's Choice Award win at the Three Minute Thesis competition.
