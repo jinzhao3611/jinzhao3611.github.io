@@ -3,12 +3,12 @@ layout: archive
 title: "Gallery"
 permalink: /gallery/
 author_profile: true
+classes: wide
 ---
 
-## Conference Presentations and Awards
+## Conference Presentations, Invited Talks, and Awards
 
-This page showcases some moments from my academic journey, including conference presentations and awards.
-
+<div class="gallery-container">
 <div class="gallery">
     <figure>
      <img src="/assets/images/gallery/acl_2025.jpg" alt="ACL 2025 SRW Chair in Vienna">
@@ -18,6 +18,16 @@ This page showcases some moments from my academic journey, including conference 
   <figure>
     <img src="/assets/images/gallery/research_award.jpg" alt="research retreat">
     <figcaption>Receiving 2024 Computer Science Outstanding Research Award at Brandeis University Research Retreat.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="/assets/images/gallery/dsd.jpg" alt="Data Science Day Keynote">
+    <figcaption>Keynote speaker at Data Science Day.</figcaption>
+  </figure>
+
+  <figure>
+    <img src="/assets/images/gallery/whs.jpg" alt="Waltham High School Talk">
+    <figcaption>Presenting at Waltham High School.</figcaption>
   </figure>
   <figure>
     <img src="/assets/images/gallery/naacl.jpg" alt="Albuquerque Conference Presentation">
@@ -68,12 +78,44 @@ This page showcases some moments from my academic journey, including conference 
     <figcaption>Receiving First Prize for Machine Learning Track at Codestellation Brandeis Hackathon 2019.</figcaption>
   </figure>
 </div>
+</div>
 
 <style>
+.gallery-intro {
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+
+.gallery-container {
+  max-width: 100%;
+  overflow: hidden;
+}
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  grid-gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .gallery {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .gallery {
+    grid-template-columns: 1fr;
+  }
 }
 
 .gallery figure {
@@ -81,11 +123,13 @@ This page showcases some moments from my academic journey, including conference 
   overflow: hidden;
   border-radius: 5px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-sizing: border-box;
 }
 
 .gallery img {
   width: 100%;
   height: auto;
+  display: block;
   transition: transform 0.3s ease;
 }
 
