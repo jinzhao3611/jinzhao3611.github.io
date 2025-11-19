@@ -18,7 +18,7 @@ classes: wide
 ### Organizer
 - Student Research Workshop Chair, ACL 2025. [Organizing committee](https://2025.aclweb.org/organization/)
 - Session Chair, ACL 2025. [ACL 2025](https://2025.aclweb.org/)
-- Chair, The 7th International Workshop on Designing Meaning Representations (DMR).
+- Chair, The 7th International Workshop on Designing Meaning Representations (DMR 2026), LREC 2026, Palma de Mallorca, Spain, May 11-16, 2026.
 - Program Committee Member, The 6th International Workshop on Designing Meaning Representations (DMR).
 - Co-organizer, Brandeis Computer Science Department Research Retreat, 2023.
 
@@ -27,6 +27,7 @@ classes: wide
 
 ### Reviewer
 - Association of Computational Linguistics Rolling Review (ARR) — Dec 2024–Present. [ARR](https://aclrollingreview.org/)
+- LREC 2025.
 - Text2Story 2025. [Text2Story](https://text2story25.inesctec.pt/)
 - LREC-COLING 2024.
 - SemEval 2023.
