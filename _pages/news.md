@@ -5,6 +5,21 @@ permalink: /news/
 author_profile: true
 ---
 
+## News
+
+### 2026
+**Lecturer for COSI 230b** - *Brandeis University* (Spring 2026)
+Teaching COSI 230b: Natural Language Annotation for Machine Learning.
+
+**Workshop Chair for DMR 2026** - *LREC-COLING 2026* (May 11-16, 2026)
+Co-chair of the 7th International Workshop on Designing Meaning Representations (DMR), to be held in Palma de Mallorca, Spain.
+[Workshop website →](https://dmr2026.github.io/)
+
+### 2025
+**Student Research Workshop Chair** - *ACL 2025* (July 27 - August 1, 2025)
+Co-chair of the ACL 2025 Student Research Workshop, held in Vienna, Austria.
+[Conference website →](https://2025.aclweb.org/organization/)
+
 ## Media Coverage
 
 ### 2025
