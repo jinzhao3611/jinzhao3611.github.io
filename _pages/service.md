@@ -26,6 +26,7 @@ classes: wide
 - Co-editor, Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 4: Student Research Workshop), 2025.
 
 ### Reviewer
+- Journal of Digital Social Research (2026).
 - Association of Computational Linguistics Rolling Review (ARR) — Dec 2024–Present. [ARR](https://aclrollingreview.org/)
 - LREC 2025.
 - Text2Story 2025. [Text2Story](https://text2story25.inesctec.pt/)
