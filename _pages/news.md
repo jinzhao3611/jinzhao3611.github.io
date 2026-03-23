@@ -23,6 +23,11 @@ Co-chair of the ACL 2025 Student Research Workshop, held in Vienna, Austria.
 ## Media Coverage
 
 ### 2025
+**"From Jargon to Genius: Brandeis Contestants Must Explain Their Research in Three Spellbinding Minutes"** - *Waltham Times* (March 22, 2026)
+Featured with photo and quotes in coverage of the Brandeis Three Minute Thesis Competition.
+[Read the article →](https://walthamtimes.org/2026/03/22/from-jargon-to-genius-brandeis-contestants-must-explain-their-research-in-three-spellbinding-minutes/)
+
+
 **Keynote Speaker at Data Science Day 2025** - *New England Statistical Society NextGen* (November 8, 2025)
 Keynote speakers for "The Power of Data". 
 [Learn more →](https://nestat.org/events/nextgen/)
