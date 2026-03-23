@@ -8,7 +8,7 @@ author_profile: true
 ## News
 
 ### 2026
-**Lecturer for COSI 230b** - *Brandeis University* (Spring 2026)
+**[Lecturer for COSI 230b](https://jinzhao3611.github.io/cosi230b/)** - *Brandeis University* (Spring 2026)
 Teaching COSI 230b: Natural Language Annotation for Machine Learning.
 
 **Workshop Chair for DMR 2026** - *LREC-COLING 2026* (May 11-16, 2026)
