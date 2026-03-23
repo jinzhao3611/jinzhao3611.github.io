@@ -11,6 +11,11 @@ classes: wide
 <div class="gallery-container">
 <div class="gallery">
     <figure>
+     <img src="/assets/images/gallery/dissertation_defense.jpg" alt="Dissertation Defense">
+     <figcaption>Dissertation defense at Brandeis University, March 2026.</figcaption>
+   </figure>
+
+    <figure>
      <img src="/assets/images/gallery/acl_2025.jpg" alt="ACL 2025 SRW Chair in Vienna">
      <figcaption>Student Research Workshop Chair at ACL 2025 in Vienna. <a href="https://2025.aclweb.org/organization/">Organizing committee</a>.</figcaption>
    </figure>
