@@ -7,7 +7,7 @@ permalink: /
 
 <span style="font-size:2em">**Jin Zhao**</span>
 
-I am a Ph.D. candidate at Brandeis University, advised by Professor [Nianwen Xue](https://www.cs.brandeis.edu/~xuen/), in computer science with a focus on natural language processing and computational linguistics.
+I am a Ph.D. candidate at Brandeis University, primarily advised by Professor [Nianwen Xue](https://www.cs.brandeis.edu/~xuen/) and co-advised by Professor [James Pustejovsky](https://pusto.com/), in computer science with a focus on natural language processing and computational linguistics.
 
 I am interested in computational framing analysis, particularly through the lens of event relation analysis. My research explores how relationships between events, such as coreference and causality, can reveal underlying perspectives or attitudes in media. I have conducted studies on cross-document event coreference and causal relations to understand how events contributed to framing in different contexts and sources. My research aims to deepen insights into the role of event relations in shaping public perception and discourse, ultimately advancing methods for detecting and quantifying media framing in natural language processing.
 
