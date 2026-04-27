@@ -27,7 +27,7 @@ classes: wide
 
 ### Reviewer
 - Journal of Digital Social Research (2026).
-- Association of Computational Linguistics Rolling Review (ARR) — Dec 2024–Present. [ARR](https://aclrollingreview.org/)
+- Association of Computational Linguistics Rolling Review (ARR) — reviewer for ACL, NAACL, EMNLP, and NeurIPS — Dec 2024–Present. [ARR](https://aclrollingreview.org/)
 - LREC 2025.
 - Text2Story 2025. [Text2Story](https://text2story25.inesctec.pt/)
 - LREC-COLING 2024.
