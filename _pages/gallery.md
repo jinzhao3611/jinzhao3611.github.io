@@ -11,14 +11,44 @@ classes: wide
 <div class="gallery-container">
 <div class="gallery">
     <figure>
+     <img src="/assets/images/gallery/commencement.png" alt="Brandeis Graduation">
+     <figcaption>Graduating from Brandeis University, May 2026.</figcaption>
+   </figure>
+
+    <figure>
+     <img src="/assets/images/gallery/commencement_speech.jpg" alt="Commencement Speaker">
+     <figcaption>Selected as Commencement Speaker at Brandeis University, May 2026.</figcaption>
+   </figure>
+
+    <figure>
      <img src="/assets/images/gallery/dissertation_defense.jpg" alt="Dissertation Defense">
      <figcaption>Dissertation defense at Brandeis University, March 2026.</figcaption>
+   </figure>
+
+    <figure>
+     <img src="/assets/images/gallery/lrec_2026.jpg" alt="DMR Workshop Co-chair at LREC 2026">
+     <figcaption>Co-chair of the Designing Meaning Representations (DMR) workshop at LREC 2026 in Mallorca, Spain.</figcaption>
+   </figure>
+
+    <figure>
+     <img src="/assets/images/gallery/san_diego.jpg" alt="ACL 2026 Paper Presentation in San Diego">
+     <figcaption>Presenting research paper at ACL 2026 in San Diego.</figcaption>
    </figure>
 
     <figure>
      <img src="/assets/images/gallery/acl_2025.jpg" alt="ACL 2025 SRW Chair in Vienna">
      <figcaption>Student Research Workshop Chair at ACL 2025 in Vienna. <a href="https://2025.aclweb.org/organization/">Organizing committee</a>.</figcaption>
    </figure>
+
+    <figure>
+     <img src="/assets/images/gallery/EMNLP_2025_Suzhou.jpg" alt="EMNLP 2025 Paper Presentation in Suzhou">
+     <figcaption>Presenting research paper at EMNLP 2025 in Suzhou, China.</figcaption>
+   </figure>
+
+  <figure>
+    <img src="/assets/images/gallery/research_award_2026.JPG" alt="2026 Outstanding Research Award">
+    <figcaption>Receiving the 2026 Computer Science Outstanding Research Award at Brandeis University.</figcaption>
+  </figure>
 
   <figure>
     <img src="/assets/images/gallery/research_award.jpg" alt="research retreat">
@@ -133,13 +163,66 @@ classes: wide
 
 .gallery img {
   width: 100%;
-  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
   display: block;
   transition: transform 0.3s ease;
 }
 
+.gallery img {
+  cursor: zoom-in;
+}
+
 .gallery img:hover {
   transform: scale(1.03);
+}
+
+/* Lightbox */
+.lightbox-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.9);
+  cursor: zoom-out;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.lightbox-overlay.open {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-overlay img {
+  max-width: 95%;
+  max-height: 85%;
+  object-fit: contain;
+  border-radius: 5px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-caption {
+  color: #fff;
+  text-align: center;
+  font-style: italic;
+  margin-top: 15px;
+  max-width: 800px;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: #fff;
+  font-size: 40px;
+  line-height: 1;
+  cursor: pointer;
+  border: none;
+  background: none;
 }
 
 .gallery figcaption {
@@ -148,5 +231,48 @@ classes: wide
   font-style: italic;
 }
 </style>
+
+<div class="lightbox-overlay" id="lightbox">
+  <button class="lightbox-close" aria-label="Close">&times;</button>
+  <img src="" alt="">
+  <div class="lightbox-caption"></div>
+</div>
+
+<script>
+(function () {
+  var overlay = document.getElementById('lightbox');
+  if (!overlay) return;
+  var lbImg = overlay.querySelector('img');
+  var lbCaption = overlay.querySelector('.lightbox-caption');
+
+  function open(src, alt, caption) {
+    lbImg.src = src;
+    lbImg.alt = alt || '';
+    lbCaption.textContent = caption || '';
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    overlay.classList.remove('open');
+    lbImg.src = '';
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.gallery figure').forEach(function (fig) {
+    var img = fig.querySelector('img');
+    var cap = fig.querySelector('figcaption');
+    if (!img) return;
+    img.addEventListener('click', function () {
+      open(img.src, img.alt, cap ? cap.textContent.trim() : '');
+    });
+  });
+
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') close();
+  });
+})();
+</script>
 
 <!-- I see you have additional images: Boulder.jpg and Georgetown.jpg. Would you like to add these to the gallery as well? --> 
