@@ -21,6 +21,11 @@ classes: wide
    </figure>
 
     <figure>
+     <img src="/assets/images/gallery/codametrix_hackathon.jpeg" alt="Codametrix Hackathon 2026 Second Place">
+     <figcaption>Winning Second Place at the Codametrix Hackathon 2026.</figcaption>
+   </figure>
+
+    <figure>
      <img src="/assets/images/gallery/dissertation_defense.jpg" alt="Dissertation Defense">
      <figcaption>Dissertation defense at Brandeis University, March 2026.</figcaption>
    </figure>
