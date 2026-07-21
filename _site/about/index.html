@@ -9,8 +9,8 @@
   <head>
     <meta charset="utf-8">
 
-<!-- begin _includes/seo.html --><title>About me - Jin Zhao</title>
-<meta name="description" content="Jin Zhao’s personal web page">
+<!-- begin _includes/seo.html --><title>About - Jin Zhao</title>
+<meta name="description" content="Jin Zhao — Assistant Professor of Computer Science at Saint Louis University. Natural language processing for understanding how different sources tell different stories about the same events.">
 
 
   <meta name="author" content="Jin Zhao">
@@ -19,14 +19,11 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="Jin Zhao">
-<meta property="og:title" content="About me">
-<meta property="og:url" content="https://jinzhao3611.github.io//about/">
+<meta property="og:title" content="About">
+<meta property="og:url" content="http://localhost:4000/about/">
 
 
-  <meta property="og:description" content="Jin Zhao’s personal web page">
-
-
-
+  <meta property="og:description" content="Jin Zhao — Assistant Professor of Computer Science at Saint Louis University. Natural language processing for understanding how different sources tell different stories about the same events.">
 
 
 
@@ -35,12 +32,15 @@
 
 
 
-  
+
+
 
   
 
+  
 
-<link rel="canonical" href="https://jinzhao3611.github.io//about/">
+
+<link rel="canonical" href="http://localhost:4000/about/">
 
 
 
@@ -51,7 +51,7 @@
     
       "@type": "Person",
       "name": "Jin Zhao",
-      "url": "https://jinzhao3611.github.io//"
+      "url": "http://localhost:4000/"
     
   }
 </script>
@@ -101,7 +101,7 @@
 
   </head>
 
-  <body class="layout--archive">
+  <body class="layout--archive wide">
     <nav class="skip-links">
   <h2 class="screen-reader-text">Skip links</h2>
   <ul>
@@ -122,24 +122,30 @@
     <div class="masthead__menu">
       <nav id="site-nav" class="greedy-nav">
         
-          <a class="site-logo" href="/"><img src="/assets/images/logo.png" alt=""></a>
+          <a class="site-logo" href="/"><img src="/assets/images/slu_logo.jpg" alt=""></a>
         
         <a class="site-title" href="/">
           Jin Zhao
-          <span class="site-subtitle">Welcome! I am an NLP researcher and sociolinguistics enthusiast.</span>
+          
         </a>
         <ul class="visible-links"><li class="masthead__menu-item">
               <a href="/">Home</a>
             </li><li class="masthead__menu-item">
+              <a href="/research/">Research</a>
+            </li><li class="masthead__menu-item">
               <a href="/pub/">Publications</a>
             </li><li class="masthead__menu-item">
-              <a href="/about/">About</a>
+              <a href="/join/">People & Join</a>
+            </li><li class="masthead__menu-item">
+              <a href="/teaching/">Teaching</a>
+            </li><li class="masthead__menu-item">
+              <a href="/service/">Service</a>
+            </li><li class="masthead__menu-item">
+              <a href="/news/">Media</a>
             </li><li class="masthead__menu-item">
               <a href="/gallery/">Gallery</a>
             </li><li class="masthead__menu-item">
-              <a href="/news/">News</a>
-            </li><li class="masthead__menu-item">
-              <a href="/service/">Service</a>
+              <a href="/about/">About</a>
             </li></ul>
         
         <button class="greedy-nav__toggle hidden" type="button">
@@ -180,7 +186,7 @@
     
     
       <div class="author__bio" itemprop="description">
-        <p>Computer Science Ph.D Student@Brandeis</p>
+        <p>Assistant Professor of Computer Science, Saint Louis University</p>
 
       </div>
     
@@ -190,10 +196,6 @@
     <button class="btn btn--inverse">Follow</button>
     <ul class="author__urls social-icons">
       
-        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
-          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Waltham, MA</span>
-        </li>
-      
 
       
         
@@ -202,7 +204,11 @@
           
         
           
-            <li><a href="https://aclanthology.org/people/j/jin-zhao/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-book" aria-hidden="true"></i><span class="label">ACL Anthology</span></a></li>
+            <li><a href="https://aclanthology.org/people/jin-zhao-6603/" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-book" aria-hidden="true"></i><span class="label">ACL Anthology</span></a></li>
+          
+        
+          
+        
           
         
           
@@ -210,11 +216,7 @@
           
         
           
-        
-          
-        
-          
-        
+            <li><a href="https://space.bilibili.com/1039604226" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-play-circle" aria-hidden="true"></i><span class="label">Bilibili</span></a></li>
           
         
       
@@ -223,8 +225,8 @@
 
       
         <li>
-          <a href="mailto:jinzhao@brandeis.edu">
-            <meta itemprop="email" content="jinzhao@brandeis.edu" />
+          <a href="mailto:jin.zhao@slu.edu">
+            <meta itemprop="email" content="jin.zhao@slu.edu" />
             <i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i><span class="label">Email</span>
           </a>
         </li>
@@ -292,22 +294,34 @@
 
   <div class="archive">
     
-      <h1 id="page-title" class="page__title">About me</h1>
+      <h1 id="page-title" class="page__title">About</h1>
     
-    <hr />
-<p><span style="font-size:1em"><strong>Jin Zhao</strong></span></p>
+    <p>I am an <strong>Assistant Professor of Computer Science at Saint Louis University</strong>,
+where I lead a research group on natural language processing for <strong>event-centric
+narrative understanding</strong> — building systems that help people compare how
+different sources tell different stories about the same events.</p>
 
-<p>I am a researcher, writer, and curious observer of how stories shape our world.
-My work sits at the intersection of natural language processing, computational framing, and communication studies. I study how the same events can be described in profoundly different ways, not because the facts change, but because the framing does.</p>
+<p>I completed my <strong>Ph.D. in Computer Science at Brandeis University (2026)</strong>, advised
+by <a href="https://www.cs.brandeis.edu/~xuen/">Nianwen Xue</a> and co-advised by
+<a href="https://pusto.com/">James Pustejovsky</a>.
+My dissertation developed computational methods for framing analysis grounded in
+events and the relations between them — cross-document event coreference, causal
+relations, and framing-divergent coreference.</p>
 
-<p>Through my research on framing-aware event coreference and framing-aware causality, I develop computational tools to uncover these subtle shifts in language, revealing how narratives diverge across media, cultures, and communities. For me, this is about understanding how the words we choose can unite, divide, or transform perspectives.</p>
+<p>My work sits at the intersection of <strong>natural language processing, computational
+linguistics, computational social science</strong>. A running
+theme is that the same events can be described in very different ways — not because
+the facts change, but because the <em>framing</em> does: which events are selected, how
+they are ordered, what is treated as cause or consequence, who is held
+responsible, and how language and images shape interpretation. I build models and
+tools that make these narrative choices visible and comparable, without asking AI
+to decide which perspective is correct.</p>
 
-<p>I believe technology should help us listen better. That means building models that are sensitive not just to what is being said, but how it’s being said and why. My hope is that by making these invisible frames visible, we can create space for deeper dialogue and more informed understanding.</p>
-
-<p><span style="font-size:0.8em"><strong>Email</strong>: jinzhao at brandeis dot edu</span><br />
-<span style="font-size:0.8em"><strong>Address</strong>: Volen Center for Complex Systems 109,
-Brandeis University, 415 South St.
-Waltham, MA 02454</span></p>
+<p>Alongside research, I have contributed to shared community infrastructure,
+including <a href="https://umr4nlp.github.io/web/">Uniform Meaning Representation</a> and
+<a href="http://umr-tool.cs.brandeis.edu/">UMR Writer</a>, and I care about mentoring: helping
+students grow into independent researchers who do careful, reproducible, and
+socially thoughtful work.</p>
 
   </div>
 </div>
@@ -332,7 +346,9 @@ Waltham, MA 02454</span></p>
 <!--  </ul>-->
 <!--</div>-->
 
-<div class="page__footer-copyright">&copy; 2025 Jin Zhao. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+
+<div class="page__footer-copyright">&copy; 2026 Jin Zhao. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
       </footer>
     </div>
 

@@ -6,8 +6,9 @@ permalink: /service/
 classes: wide
 ---
 ## Selected Talks and Presentations
-- Upcoming Keynote Speaker, NextGen: Data Science Day, New England Statistical Society (NESS), Brandeis University, 2025.
-- Upcoming Guest Lecturer, Natural Language Processing, Wellesley College, 2025.
+- Panelist, Brandeis University Writers' Retreat, 2026.
+- Keynote Speaker, NextGen: Data Science Day, New England Statistical Society (NESS), Brandeis University, 2025.
+- Guest Lecturer, Natural Language Processing, Wellesley College, 2025.
 - Tutorial Instructor, UMR Summer School, UC Boulder, 2024. [Details](https://umr4nlp.github.io/web/SummerSchool2024.html)
 - Tutorial Instructor, UMR Workshop, Georgetown University, 2024.
 - Research talk, Brandeis Computational Linguistics Colloquium, Brandeis University, 2023.
@@ -18,11 +19,13 @@ classes: wide
 ### Organizer
 - Student Research Workshop Chair, ACL 2025. [Organizing committee](https://2025.aclweb.org/organization/)
 - Session Chair, ACL 2025. [ACL 2025](https://2025.aclweb.org/)
-- Chair, The 7th International Workshop on Designing Meaning Representations (DMR 2026), LREC 2026, Palma de Mallorca, Spain, May 11-16, 2026.
+- Chair, The 7th International Workshop on Designing Meaning Representations (DMR 2026), LREC-COLING 2026, Palma de Mallorca, Spain, May 11-16, 2026. [Workshop website](https://dmr2026.github.io/)
 - Program Committee Member, The 6th International Workshop on Designing Meaning Representations (DMR).
 - Co-organizer, Brandeis Computer Science Department Research Retreat, 2023.
 
 ### Editorial
+- Co-editor, Proceedings of the Seventh International Workshop on Designing Meaning Representations (DMR 2026), LREC 2026, Palma de Mallorca, Spain. [Proceedings](http://lrec-conf.org/proceedings/lrec2026/workshops/dmr/2026.dmr-1.0.pdf)
+- Guest Editor, DMR Special Issue, Language and Linguistics in Theoretical and Practical Perspective (LiLT), 2026.
 - Co-editor, Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 4: Student Research Workshop), 2025.
 
 ### Reviewer

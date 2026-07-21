@@ -1,33 +1,29 @@
 ---
 layout: archive
-title: "News & Media"
+title: "Media"
 permalink: /news/
 author_profile: true
+classes: wide
 ---
 
-## News
-
 ### 2026
-**[Lecturer for COSI 230b](https://jinzhao3611.github.io/cosi230b/)** - *Brandeis University* (Spring 2026)
-Teaching COSI 230b: Natural Language Annotation for Machine Learning.
+**Graduate Student Commencement Speaker** - *Brandeis University 75th Commencement* (May 2026)
+[Watch the speech →](https://www.youtube.com/watch?v=JW7UQ6dVGgE&t=4553s)
 
-**Workshop Chair for DMR 2026** - *LREC-COLING 2026* (May 11-16, 2026)
-Co-chair of the 7th International Workshop on Designing Meaning Representations (DMR), to be held in Palma de Mallorca, Spain.
-[Workshop website →](https://dmr2026.github.io/)
+**"Rigor and empathy, hand in hand: Brandeis University's 75th Commencement"** - *Brandeis Stories* (May 17, 2026)
+[Read the article →](https://www.brandeis.edu/stories/2026/may/commencement-recap.html) · [archived](https://web.archive.org/web/20260530031033/https://www.brandeis.edu/stories/2026/may/commencement-recap.html) · [PDF](/assets/media/2026-05-17-commencement-recap.pdf)
 
-### 2025
-**Student Research Workshop Chair** - *ACL 2025* (July 27 - August 1, 2025)
-Co-chair of the ACL 2025 Student Research Workshop, held in Vienna, Austria.
-[Conference website →](https://2025.aclweb.org/organization/)
+**"A Last Hurrah: Graduate Students Reflect Before Commencement"** - *Brandeis Graduate School of Arts and Sciences* (May 11, 2026)
+[Read the article →](https://www.brandeis.edu/graduate-affairs/news-events/stories/2026/commencement-2026.html) · [archived](https://web.archive.org/web/20260530031205/https://www.brandeis.edu/graduate-affairs/news-events/stories/2026/commencement-2026.html) · [PDF](/assets/media/2026-05-11-a-last-hurrah.pdf)
 
-## Media Coverage
+**"Jin Zhao, MS'20, PhD'26: The words we choose, the world we see"** - *Brandeis Stories* (May 6, 2026)
+[Read the article →](https://www.brandeis.edu/stories/2026/may/zhao-graduate-speaker.html) · [archived](https://web.archive.org/web/20260530031223/https://www.brandeis.edu/stories/2026/may/zhao-graduate-speaker.html) · [PDF](/assets/media/2026-05-06-words-we-choose.pdf)
 
-### 2025
 **"From Jargon to Genius: Brandeis Contestants Must Explain Their Research in Three Spellbinding Minutes"** - *Waltham Times* (March 22, 2026)
 Featured with photo and quotes in coverage of the Brandeis Three Minute Thesis Competition.
 [Read the article →](https://walthamtimes.org/2026/03/22/from-jargon-to-genius-brandeis-contestants-must-explain-their-research-in-three-spellbinding-minutes/)
 
-
+### 2025
 **Keynote Speaker at Data Science Day 2025** - *New England Statistical Society NextGen* (November 8, 2025)
 Keynote speakers for "The Power of Data". 
 [Learn more →](https://nestat.org/events/nextgen/)

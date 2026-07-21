@@ -18,14 +18,14 @@ minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt"
 locale                   : "en-US"
 title                    : "Jin Zhao"
 title_separator          : "-"
-subtitle                 : "Welcome! I am an NLP researcher and sociolinguistics enthusiast."
+subtitle                 :
 name                     : "Jin Zhao"
-description              : "Jin Zhao's personal web page"
+description              : "Jin Zhao — Assistant Professor of Computer Science at Saint Louis University. Natural language processing for understanding how different sources tell different stories about the same events."
 url                      : "https://jinzhao3611.github.io/"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "jinzhao3611/jinzhao3611.github.io"
 teaser                   : # "/assets/images/brandeis.png"
-logo                     : "/assets/images/logo.png"
+logo                     : "/assets/images/slu_logo.jpg"
 favicon                  : "/assets/favicon/favicon.ico"
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
 # breadcrumbs            : false # true, false (default)
@@ -96,37 +96,35 @@ analytics:
 author:
   name             : "Jin Zhao"
   avatar           : "/assets/images/avatar.jpeg"
-  bio              : "Computer Science Ph.D Student@Brandeis"
-  location         : "Waltham, MA"
-  email            : "jinzhao@brandeis.edu"
+  bio              : "Assistant Professor of Computer Science, Saint Louis University"
+  location         :
+  email            : "jin.zhao@slu.edu"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
-      # url: "jinzhao@brandeis.edu"
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      # url: "https://jinzhao3611.github.io/"
-    # - label: "Google Scholar"
-    #   icon: "fas fa-fw fa-graduation-cap"
-    #   url: "https://scholar.google.com/citations?user=REPLACE_WITH_YOUR_ID"
+      # Leave url blank so Minimal Mistakes builds a mailto: link from author.email above.
+    - label: "Google Scholar"
+      icon: "fas fa-fw fa-graduation-cap"
+      # FIXME: add your Google Scholar profile URL, then uncomment.
+      # url: "https://scholar.google.com/citations?user=REPLACE_WITH_YOUR_ID"
     - label: "ACL Anthology"
       icon: "fas fa-fw fa-book"
-      url: "https://aclanthology.org/people/j/jin-zhao/"
+      url: "https://aclanthology.org/people/jin-zhao-6603/"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      # FIXME: add your GitHub profile URL, then uncomment.
+      # url: "https://github.com/REPLACE_WITH_YOUR_USERNAME"
+    - label: "ORCID"
+      icon: "fab fa-fw fa-orcid"
+      # FIXME: add your ORCID URL, then uncomment.
+      # url: "https://orcid.org/0000-0000-0000-0000"
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
       url: "https://www.linkedin.com/in/jin-zhao-893290338/"
-    - label: "Twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      # url: "https://twitter.com/"
-    - label: "Facebook"
-      icon: "fab fa-fw fa-facebook-square"
-      # url: "https://facebook.com/"
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      # url: "https://github.com/"
-    - label: "Instagram"
-      icon: "fab fa-fw fa-instagram"
-      # url: "https://instagram.com/"
+    - label: "Bilibili"
+      # MM 4.19.3 ships Font Awesome 5, which has no Bilibili brand icon; using a video icon.
+      icon: "fas fa-fw fa-play-circle"
+      url: "https://space.bilibili.com/1039604226"
 
 
 # Reading Files

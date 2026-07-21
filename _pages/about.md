@@ -1,21 +1,34 @@
 ---
 layout: archive
-title: About me
+title: About
 author_profile: true
 permalink: /about/
+classes: wide
 ---
 
----
-<span style="font-size:1em">**Jin Zhao**</span>
+I am an **Assistant Professor of Computer Science at Saint Louis University**,
+where I lead a research group on natural language processing for **event-centric
+narrative understanding** — building systems that help people compare how
+different sources tell different stories about the same events.
 
-I am a researcher, writer, and curious observer of how stories shape our world.
-My work sits at the intersection of natural language processing, computational framing, and communication studies. I study how the same events can be described in profoundly different ways, not because the facts change, but because the framing does.
+I completed my **Ph.D. in Computer Science at Brandeis University (2026)**, advised
+by [Nianwen Xue](https://www.cs.brandeis.edu/~xuen/) and co-advised by
+[James Pustejovsky](https://pusto.com/).
+My dissertation developed computational methods for framing analysis grounded in
+events and the relations between them — cross-document event coreference, causal
+relations, and framing-divergent coreference.
 
-Through my research on framing-aware event coreference and framing-aware causality, I develop computational tools to uncover these subtle shifts in language, revealing how narratives diverge across media, cultures, and communities. For me, this is about understanding how the words we choose can unite, divide, or transform perspectives.
+My work sits at the intersection of **natural language processing, computational
+linguistics, computational social science**. A running
+theme is that the same events can be described in very different ways — not because
+the facts change, but because the *framing* does: which events are selected, how
+they are ordered, what is treated as cause or consequence, who is held
+responsible, and how language and images shape interpretation. I build models and
+tools that make these narrative choices visible and comparable, without asking AI
+to decide which perspective is correct.
 
-I believe technology should help us listen better. That means building models that are sensitive not just to what is being said, but how it’s being said and why. My hope is that by making these invisible frames visible, we can create space for deeper dialogue and more informed understanding.
-
-<span style="font-size:0.8em">**Email**: jinzhao at brandeis dot edu</span><br/>
-<span style="font-size:0.8em">**Address**: Volen Center for Complex Systems 109,
-Brandeis University, 415 South St.
-Waltham, MA 02454</span>
+Alongside research, I have contributed to shared community infrastructure,
+including [Uniform Meaning Representation](https://umr4nlp.github.io/web/) and
+[UMR Writer](http://umr-tool.cs.brandeis.edu/), and I care about mentoring: helping
+students grow into independent researchers who do careful, reproducible, and
+socially thoughtful work.

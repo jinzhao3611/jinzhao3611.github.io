@@ -1,24 +1,23 @@
 # main links
 main:
-#  - title: "Quick-Start Guide"
-#    url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
    - title: "Home"
      url: /
-#   - title: "Posts"
-#     url: /_posts/
+   - title: "Research"
+     url: /research/
    - title: "Publications"
      url: /pub/
-   - title: "About"
-     url: /about/
-
-   - title: "Gallery" 
-     url: /gallery/
-   - title: "News"
-     url: /news/
+   - title: "People & Join"
+     url: /join/
+   - title: "Teaching"
+     url: /teaching/
    - title: "Service"
      url: /service/
-#  - title: "Application"
-#      url: /app/
-
-  # - title: "Sitemap"
-  #   url: /sitemap/
+   - title: "Media"
+     url: /news/
+   - title: "Gallery"
+     url: /gallery/
+   - title: "About"
+     url: /about/
+   # Hidden for now — Software & Data page is not ready yet.
+   # - title: "Software & Data"
+   #   url: /software/
