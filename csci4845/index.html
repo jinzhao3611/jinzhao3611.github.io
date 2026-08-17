@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSCI 4845/5845 — Natural Language Processing · Fall 2026</title>
+<link rel="stylesheet" href="course.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <span class="brand">CSCI 4845/5845 · NLP · Fall 2026</span>
+    <a href="index.html" class="active">Course Home</a>
+    <a href="syllabus-4845.html">Syllabus (4845 UG)</a>
+    <a href="syllabus-5845.html">Syllabus (5845 Grad)</a>
+    <a href="https://jinzhao3611.github.io/">Instructor</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<h1>CSCI 4845/5845: Natural Language Processing</h1>
+<p><strong>Saint Louis University · Fall 2026</strong></p>
+
+<table>
+  <tr><td><strong>Meetings</strong></td><td>Tue/Thu 11:00 AM – 12:15 PM · Busch Student Center 253</td></tr>
+  <tr><td><strong>Term</strong></td><td>Aug 20 – Dec 3 (last class meeting; regular classes end Fri Dec 4)</td></tr>
+  <tr><td><strong>Final exam slot</strong></td><td>Tue Dec 8, 12:00–1:50 PM — all project presentations (no written final)</td></tr>
+  <tr><td><strong>Instructor</strong></td><td>Jin Zhao · <a href="mailto:jin.zhao@slu.edu">jin.zhao@slu.edu</a> · Ritter Hall 309</td></tr>
+  <tr><td><strong>Office hours</strong></td><td>Tue/Wed/Thu 2:00–3:00 PM in Ritter Hall 309, and by appointment</td></tr>
+  <tr><td><strong>Listings</strong></td><td>CSCI 4845-01 (undergraduate, CRN 16538) · CSCI 5845-01 (graduate, CRN 16543)</td></tr>
+</table>
+
+<div class="notice">
+  <strong>Which syllabus applies to me?</strong> The two listings share lectures, materials, and
+  the midterm, but requirements differ in the homework, reading quizzes, and final project.
+  Undergraduates follow the <a href="syllabus-4845.html">CSCI 4845 syllabus</a>; graduate
+  students follow the <a href="syllabus-5845.html">CSCI 5845 syllabus</a>.
+</div>
+
+<h2>Course Description</h2>
+<p>
+Natural language processing (NLP) is the study of computational systems that understand and
+generate human language. This course is a comprehensive tour of the field across its three
+eras: <strong>classical NLP</strong> (n-gram language models, text classification, word
+vectors, sequence labeling, parsing), <strong>neural NLP</strong> (word embeddings, recurrent
+networks, attention, the Transformer), and the <strong>large language model era</strong>
+(pretraining, alignment and RLHF, prompting, efficient fine-tuning, retrieval-augmented
+generation, agents, evaluation, and safety). A central theme is that today's LLMs are the
+direct descendants of the simplest model we build in week two — the language model — and the
+course follows that single thread from counting bigrams to reasoning models.
+</p>
+<p>
+The course is lecture-oriented, with four substantial programming assignments, an in-class
+midterm, and a final team project presented during the final-exam slot.
+</p>
+
+<h2>Learning Goals</h2>
+<ol>
+  <li>Build and evaluate classical NLP models — n-gram language models, Naive Bayes and
+      logistic regression classifiers, HMM taggers — from scratch, and explain when simple
+      methods remain the right tool.</li>
+  <li>Explain the mathematical machinery of neural sequence models: embeddings, recurrence,
+      attention, and the Transformer architecture, including subword tokenization.</li>
+  <li>Implement and train a small Transformer language model, and fine-tune pretrained models
+      for downstream tasks.</li>
+  <li>Explain how modern LLMs are built end to end: pretraining data and scaling laws,
+      instruction tuning, RLHF/DPO, and inference-time techniques.</li>
+  <li>Apply the modern LLM toolkit — prompting, parameter-efficient fine-tuning,
+      retrieval-augmented generation, and tool use/agents — and justify which approach fits a
+      given problem and budget.</li>
+  <li>Design rigorous evaluations for NLP systems, and analyze systems for bias,
+      hallucination, and safety failures.</li>
+  <li>Conduct and communicate an original NLP project: formulate a question, run experiments,
+      and present findings in a conference-style report and talk.</li>
+</ol>
+
+<h2>Grading</h2>
+<table>
+  <tr><th>Component</th><th>Weight</th><th>Notes</th></tr>
+  <tr><td>Homework (4 × 10%)</td><td>40%</td><td>Programming + short written analysis (graduate extensions required in 5845)</td></tr>
+  <tr><td>Midterm exam</td><td>20%</td><td>In class Thu Oct 15; covers Lectures 1–15</td></tr>
+  <tr><td>Final project</td><td>30%</td><td>Teams of 3–4; proposal 5%, presentation 10% (Tue Dec 8 exam slot), report 15%</td></tr>
+  <tr><td>Participation &amp; quizzes</td><td>10%</td><td>Short online reading quizzes (lowest 2 dropped) + in-class participation</td></tr>
+</table>
+<p>Full grading details, late policy, AI-tools policy, and university statements are in the
+syllabi: <a href="syllabus-4845.html">CSCI 4845</a> · <a href="syllabus-5845.html">CSCI 5845</a>.</p>
+
+<h2>Materials</h2>
+<p>All required materials are free.</p>
+<ul>
+  <li><strong>[SLP3]</strong> Jurafsky &amp; Martin, <em>Speech and Language Processing</em>,
+      3rd ed. draft — <a href="https://web.stanford.edu/~jurafsky/slp3/">web.stanford.edu/~jurafsky/slp3</a></li>
+  <li><strong>[E]</strong> Eisenstein, <em>Introduction to Natural Language Processing</em> —
+      <a href="https://github.com/jacobeisenstein/gt-nlp-class/blob/master/notes/eisenstein-nlp-notes.pdf">free PDF</a></li>
+  <li>Papers and posts for the LLM-era lectures, linked from the course schedule on Canvas.</li>
+</ul>
+<p><strong>Compute:</strong> assignments are sized for Google Colab (free tier suffices). HW4
+and some projects use LLM APIs; the course provides API credits and free local alternatives
+(Ollama, small open-weight models) for every required task.</p>
+
+<h2>Communication</h2>
+<p>Lecture slides, homework, quizzes, and announcements are posted on Canvas. For questions or
+concerns related to the course, email <a href="mailto:jin.zhao@slu.edu">jin.zhao@slu.edu</a>
+or come to office hours (Tue/Wed/Thu 2:00–3:00 PM, Ritter Hall 309).</p>
+
+</main>
+
+<footer>
+  <div class="wrap">CSCI 4845/5845 · Natural Language Processing · Saint Louis University ·
+  Fall 2026 · <a href="https://jinzhao3611.github.io/">Jin Zhao</a></div>
+</footer>
+
+</body>
+</html>

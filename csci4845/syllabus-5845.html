@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSCI 5845 Syllabus — Natural Language Processing · Fall 2026</title>
+<link rel="stylesheet" href="course.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <span class="brand">CSCI 4845/5845 · NLP · Fall 2026</span>
+    <a href="index.html">Course Home</a>
+    <a href="syllabus-4845.html">Syllabus (4845 UG)</a>
+    <a href="syllabus-5845.html" class="active">Syllabus (5845 Grad)</a>
+    <a href="https://jinzhao3611.github.io/">Instructor</a>
+  </div>
+</nav>
+
+<main class="wrap">
+<div class="notice">This is the <strong>graduate</strong> (CSCI 5845) syllabus.
+Undergraduate students: see the <a href="syllabus-4845.html">CSCI 4845 syllabus</a>.</div>
+<h1 id="csci-5845-natural-language-processing">CSCI 5845: Natural
+Language Processing</h1>
+<p><strong>Saint Louis University · Fall 2026 · Section 01 · CRN 16543
+(graduate)</strong><br />
+<strong>Tue/Thu 11:00 AM – 12:15 PM · Busch Student Center 253 · Aug 20
+– Dec 3 (last class meeting; regular classes end Fri Dec
+4)</strong><br />
+<strong>Final exam slot: Tue Dec 8, 12:00–1:50 PM — all project
+presentations run in this slot (no written final)</strong><br />
+Instructor: Jin Zhao · Office: Ritter Hall 309 · Email:
+jin.zhao@slu.edu<br />
+Office hours: Tue/Wed/Thu 2:00–3:00 PM in Ritter Hall 309, and by
+appointment</p>
+<blockquote>
+<p>CSCI 5845 is cross-listed with CSCI 4845-01 (undergraduate, CRN
+16538): same meetings, same lectures and materials, same midterm.
+Requirements differ in the homework, reading quizzes, and final project
+(see Assessment). This syllabus states the requirements for CSCI 5845
+(graduate) students; undergraduates should consult the CSCI 4845
+syllabus.</p>
+</blockquote>
+<hr />
+<h2 id="course-description">Course Description</h2>
+<p>Natural language processing (NLP) is the study of computational
+systems that understand and generate human language. This course is a
+comprehensive tour of the field across its three eras: <strong>classical
+NLP</strong> (n-gram language models, text classification, word vectors,
+sequence labeling, parsing), <strong>neural NLP</strong> (word
+embeddings, recurrent networks, attention, the Transformer), and the
+<strong>large language model era</strong> (pretraining, alignment and
+RLHF, prompting, efficient fine-tuning, retrieval-augmented generation,
+agents, evaluation, and safety). A central theme is that today’s LLMs
+are the direct descendants of the simplest model we build in week two —
+the language model — and the course follows that single thread from
+counting bigrams to reasoning models.</p>
+<p>The course is lecture-oriented, with four substantial programming
+assignments, an in-class midterm, and a final team project presented
+during finals week.</p>
+<h2 id="audience-prerequisites">Audience &amp; Prerequisites</h2>
+<p>CSCI 5845 is designed for M.S. students in AI and CS; advanced
+undergraduates take the same course under the CSCI 4845 listing.</p>
+<ul>
+<li><strong>Required:</strong> solid programming ability in Python;
+comfort with probability, linear algebra, and calculus at the level of
+an undergraduate course; a prior machine learning course.</li>
+<li><strong>Not assumed:</strong> PyTorch experience. Lectures 11–12
+include a self-contained neural network refresher (paced via the HW0
+background survey), and HW0 walks through the tooling.</li>
+</ul>
+<h2 id="learning-outcomes">Learning Outcomes</h2>
+<p>By the end of the course, students will be able to:</p>
+<ol type="1">
+<li>Build and evaluate classical NLP models — n-gram language models,
+Naive Bayes and logistic regression classifiers, HMM taggers — from
+scratch, and explain when simple methods remain the right tool.</li>
+<li>Explain the mathematical machinery of neural sequence models:
+embeddings, recurrence, attention, and the Transformer architecture,
+including subword tokenization.</li>
+<li>Implement and train a small Transformer language model, and
+fine-tune pretrained models for downstream tasks.</li>
+<li>Explain how modern LLMs are built end to end: pretraining data and
+scaling laws, instruction tuning, RLHF/DPO, and inference-time
+techniques.</li>
+<li>Apply the modern LLM toolkit — prompting, parameter-efficient
+fine-tuning, retrieval-augmented generation, and tool use/agents — and
+justify which approach fits a given problem and budget.</li>
+<li>Design rigorous evaluations for NLP systems, including benchmark
+pitfalls, human evaluation, and LLM-as-judge methods, and analyze
+systems for bias, hallucination, and safety failures.</li>
+<li>Conduct and communicate an original NLP project: formulate a
+question, run experiments, and present findings in a conference-style
+report and talk.</li>
+</ol>
+<h2 id="materials">Materials</h2>
+<p>All required materials are free.</p>
+<ul>
+<li><strong>[SLP3]</strong> Jurafsky &amp; Martin, <em>Speech and
+Language Processing</em>, 3rd ed. draft —
+https://web.stanford.edu/~jurafsky/slp3/ (primary text for Units 1–2 and
+parts of Unit 3; chapter numbers in the schedule follow the 2025 draft
+before the semester).</li>
+<li><strong>[E]</strong> Eisenstein, <em>Introduction to Natural
+Language Processing</em> — secondary reference with stronger
+mathematical treatment; free PDF at
+https://github.com/jacobeisenstein/gt-nlp-class/blob/master/notes/eisenstein-nlp-notes.pdf.</li>
+<li><strong>Papers and posts</strong> for the LLM-era lectures (linked
+in the course schedule on Canvas); roughly one primary reading per
+lecture in Unit 3.</li>
+<li>Reference courses if you want another angle: Stanford CS224N, CMU
+11-711.</li>
+</ul>
+<p><strong>Compute:</strong> assignments are sized for Google Colab
+(free tier suffices; Pro is a convenient $10/mo upgrade). HW4 and some
+projects use LLM APIs — the course will provide API credits (budget
+~$5–10/student) and free local alternatives (Ollama, small open-weight
+models) for every required task.</p>
+<h2 id="course-structure">Course Structure</h2>
+<ul>
+<li><strong>Unit 1 — Foundations &amp; Classical NLP</strong> (Weeks
+1–5, 10 lectures): text processing, n-gram LMs, classification, word
+vectors, sequence labeling, parsing.</li>
+<li><strong>Unit 2 — Neural NLP &amp; the Transformer</strong> (Weeks
+6–8, 5 lectures + midterm): neural nets, RNNs, seq2seq and attention,
+machine translation, the Transformer, tokenization.</li>
+<li><strong>Unit 3 — Pretraining &amp; the LLM Era</strong> (Weeks 9–15,
+11 lectures): BERT and GPT, scaling, alignment, prompting, efficiency,
+RAG, agents, evaluation, safety, frontier topics.</li>
+</ul>
+<p>See the course schedule on Canvas for the lecture-by-lecture calendar
+with readings.</p>
+<h2 id="assessment">Assessment</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Component</th>
+<th>Weight</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Homework (4 × 10%)</td>
+<td>40%</td>
+<td>Programming + short written analysis + required graduate extensions;
+see the assignments handout on Canvas</td>
+</tr>
+<tr>
+<td>Midterm exam</td>
+<td>20%</td>
+<td>In class Thu Oct 15 (SLU midterm week); covers Lectures 1–15</td>
+</tr>
+<tr>
+<td>Final project</td>
+<td>30%</td>
+<td>Teams of 3–4; proposal 5%, presentation 10% (Tue Dec 8, 12:00–1:50
+PM exam slot), report 15%; see the project handout on Canvas</td>
+</tr>
+<tr>
+<td>Participation &amp; quizzes</td>
+<td>10%</td>
+<td>~8 short online reading quizzes (lowest 2 dropped) + in-class
+participation</td>
+</tr>
+</tbody>
+</table>
+<p>Letter scale: A ≥ 93, A− ≥ 90, B+ ≥ 87, B ≥ 83, B− ≥ 80, C+ ≥ 77, C ≥
+73, C− ≥ 70, D ≥ 60, F &lt; 60.</p>
+<p><strong>CSCI 5845 requirements (vs. CSCI 4845).</strong> The two
+listings share lectures, homework deadlines, and the midterm. CSCI 5845
+requirements differ from the undergraduate listing in three places:</p>
+<ul>
+<li><strong>Homework:</strong> each of HW1–HW4 includes a marked
+graduate extension (the “G part”) — a short additional experiment or
+analysis tied to a primary paper (see the assignments handout on
+Canvas). For CSCI 5845 students the G part is required and worth 10 of
+the 100 points on each homework (core parts are scaled to 90).</li>
+<li><strong>Reading quizzes:</strong> CSCI 5845 quizzes include one
+additional short-answer question on the week’s primary reading (same
+lowest-2-dropped policy).</li>
+<li><strong>Final project:</strong> teams including a CSCI 5845 student
+complete the research/reproduction track — including a related-work
+section and an experimental comparison against at least one baseline
+(see the project handout on Canvas). An application-track proposal is
+allowed only with instructor approval and an unusually rigorous
+evaluation plan.</li>
+</ul>
+<h2 id="policies">Policies</h2>
+<p><strong>Attendance.</strong> Lecture is the core of the course and
+slides are not a substitute. Attendance is not directly graded, but
+in-class participation feeds the participation grade.</p>
+<p><strong>Late work.</strong> Each student has <strong>5 free late
+days</strong> for the semester, at most <strong>2 per
+assignment</strong>, applied automatically. Beyond that, 10% off per
+day, and no submissions more than 4 days late. Late days do not apply to
+the project proposal, presentation, or final report (hard deadlines
+because they gate feedback and scheduling).</p>
+<p><strong>Collaboration.</strong> Discussing ideas is encouraged;
+sharing or copying code or written answers is not. Each submission lists
+everyone you discussed it with.</p>
+<p><strong>AI tools policy.</strong> This is an NLP course — using
+language models thoughtfully is a course topic, not a loophole. Three
+tiers, stated on every assessment:</p>
+<ul>
+<li><strong>Tier A — Required:</strong> parts of HW4 and many projects
+require using LLMs/APIs.</li>
+<li><strong>Tier B — Permitted with disclosure (default for
+homework):</strong> you may use AI assistants for homework the way you’d
+use a colleague — to explain concepts, debug, or draft — provided
+<ol type="1">
+<li>you disclose the tool and how you used it, and (2) you can explain
+every line you submit. Instructors may ask you to walk through your
+solution; inability to explain it is treated as an integrity violation.
+Core “from scratch” functions flagged in each assignment must be your
+own typing.</li>
+</ol></li>
+<li><strong>Tier C — Prohibited:</strong> the in-class midterm (closed
+book, one handwritten note sheet) and reading quizzes.</li>
+</ul>
+<p>The assessment mix (in-class exam + oral project presentation +
+explainability rule) is deliberately designed so the course measures
+what students can do, not what their tools can do. (This section also
+serves as the written generative-AI use policy that SLU requires every
+course syllabus to state explicitly.)</p>
+<p><strong>Academic integrity.</strong> The University’s required
+statement appears in <a
+href="#university-syllabus-statements-ay26-27">University Syllabus
+Statements</a> below; suspected violations in this course are handled
+under the University-level Academic Integrity Policy.</p>
+<p><strong>Accommodations, Title IX, wellness.</strong> See the required
+and recommended University statements in <a
+href="#university-syllabus-statements-ay26-27">University Syllabus
+Statements</a> below.</p>
+<h2 id="university-syllabus-statements-ay26-27">University Syllabus
+Statements (AY26-27)</h2>
+<p><em>The statements below are the official SLU institution-level
+syllabus statements, effective August 2026 – July 2027, taken verbatim
+from the Provost’s compiled statements document (Title IX statement
+revised 8/13/26; others unchanged from last year).</em></p>
+<h3 id="academic-integrity-required">Academic Integrity (required)</h3>
+<p>Academic integrity is the commitment to and demonstration of honest
+and moral behavior in an academic setting. Since the mission of the
+University is “the pursuit of truth for the greater glory of God and for
+the service of humanity,” acts of integrity are essential to its very
+reason for existence. Thus, the University regards academic integrity as
+a matter of serious importance. Academic integrity is the foundation of
+the academic assessment process, which in turn sustains the ability of
+the University to certify to the outside world the skills and
+attainments of its graduates. Adhering to the standards of academic
+integrity allows all members of the University to contribute to a just
+and equitable learning environment that cultivates moral character and
+self-respect. The full University-level Academic Integrity Policy can be
+found on the Provost’s Office website at:
+https://www.slu.edu/provost/policies/academic-and-course/academic-integrity-policy.pdf.</p>
+<h3 id="disability-accommodations-required">Disability Accommodations
+(required)</h3>
+<p>Students with a documented disability who wish to request academic
+accommodations must formally register their disability with the
+University. Once successfully registered, students also must notify
+their course instructor that they wish to use their approved
+accommodations in the course.</p>
+<p>Please contact the Center for Accessibility and Disability Resources
+(CADR) to schedule an appointment to discuss accommodation requests and
+eligibility requirements. Most students on the St. Louis campus will
+contact CADR, located in the Student Success Center and available by
+email at accessibility_disability@slu.edu or by phone at 314.977.3484.
+Once approved, information about a student’s eligibility for academic
+accommodations will be shared with course instructors by email from CADR
+and within Banner. Students who do not have a documented disability but
+who think they may have one also are encouraged to contact CADR.
+Confidentiality will be observed in all inquiries.</p>
+<h3 id="title-ix-required">Title IX (required)</h3>
+<p>Saint Louis University and its faculty are committed to supporting
+our students and seeking an environment that is free of bias,
+discrimination, and harassment. If you have encountered any form of
+discrimination on the basis of sex, including sexual harassment, sexual
+assault, stalking, domestic or dating violence, we encourage you to
+report this to the University. If you speak with a faculty member about
+an incident that involves a Title IX matter, <strong>that faculty member
+must notify SLU’s Title IX Coordinator that you shared an experience
+relating to Title IX.</strong> This is true even if you ask the faculty
+member not to disclose the incident. The Title IX Coordinator will then
+be available to assist you in understanding all of your options and in
+connecting you with all possible resources on and off campus.</p>
+<p>If you are pregnant or experiencing a pregnancy related condition,
+the Title IX Coordinator can assist you in understanding your rights and
+options as well as provide supportive measures.</p>
+<p>Anna Kratky is the Title IX Coordinator at Saint Louis University
+(DuBourg Hall, room 36; anna.kratky@slu.edu; 314-977-3886). If you wish
+to speak with a confidential source, you may contact the counselors at
+the University Counseling Center at 314-977-TALK or make an anonymous
+report through SLU’s Integrity Hotline by calling 1-877-525-5669 or
+online at <a
+href="https://www.slu.edu/compliance-ethics/hotline.php">SLU.EDU/INTEGRITYHOTLINE</a>.
+To view SLU’s policies, and for resources, please visit the following
+web address:
+https://www.slu.edu/about/safety/sexual-assault-resources/index.php.</p>
+<h3 id="student-success-center">Student Success Center</h3>
+<p>The Student Success Center (SSC) supports students in reaching their
+goals in and out of the classroom. Providing a variety of resources, the
+Student Success Center houses both the Center for Accessibility and
+Disability Resources (CADR) and Academic Support, which includes
+Tutoring, Supplemental Instruction, University Writing Services, and
+Student Success Coaching. The Student Success Center is located in the
+Busch Student Center, Suite 331, and students can make an appointment
+with any SSC resource via EAB Navigate - Student. To learn more about
+the Student Success Center and its resources, please visit:
+https://www.slu.edu/life-at-slu/student-success-center/index.php.</p>
+<h3 id="university-writing-services">University Writing Services</h3>
+<p>University Writing Services offers one-on-one consultations with
+trained writing consultants who help with everything from brainstorming,
+outlining, and proposing research questions to documenting sources,
+revising, and implementing feedback. These consultations are available
+to both graduate and undergraduate students and can take place
+in-person, asynchronously, or via Zoom. All appointments can be
+scheduled through EAB Navigate – Student. Getting feedback benefits
+writers at all skill levels on different writing projects (including but
+not limited to class assignments, conference papers, cover letters,
+dissertations, group projects, multimedia assignments, personal
+statements, senior capstone projects, short answer questions on
+applications, speeches, and theses). For additional information, visit
+https://www.slu.edu/life-at-slu/student-success-center/academic-support/university-writing-services/index.php
+or send an email to writing@slu.edu.</p>
+<h3 id="university-counseling-center">University Counseling Center</h3>
+<p>The University Counseling Center (UCC) offers free, short-term,
+solution-focused counseling to Saint Louis University undergraduate and
+graduate students. UCC counselors are highly trained clinicians who can
+assist with a variety of issues, such as adjustment to college life,
+troubling changes in mood, and chronic psychological conditions. To make
+an appointment for a wellness consultation, call 314-977-8255 (TALK),
+visit <a
+href="https://www.slu.edu/life-at-slu/university-counseling/index.php">the
+UCC website</a> or walk into the clinic on the second floor of Wuller
+Hall. For after-hours needs, please press #9 after dialing the clinic
+number and ask for a mental health specialist. Free virtual teletherapy
+is also available through UCC partner, <a
+href="https://timelycare.com/slu">TimelyCare</a>.</p>
+<h3 id="wellness">Wellness</h3>
+<p>With our Jesuit commitment to <em>cura personalis</em>, the
+University sees your academic success as connected to your health and
+well-being and provides resources to support your holistic wellness.</p>
+<p>All students experience stressors and challenges at some point, and
+seeking support is both normal and beneficial. Such challenges may be
+the result of academic concerns (such as those related to particular
+assignments or content in a course), or they may be more personal in
+nature (such as concerns related to relationships, mental health,
+medical issues, loss, identities, alcohol or drugs, housing or food
+security, finances, or local/world events, among other things). If you
+experience these or other difficulties that are impacting your
+well-being and/or academic work, please consider seeking support from
+the resources available to you.</p>
+<ul>
+<li>For questions or concerns related to this course, please contact me.
+I am invested in your success and will support your success in the ways
+I can.</li>
+<li>Additionally, you have access to the many resources SLU provides in
+support of your personal wellness. You will find a list of available
+resources on <a href="https://www.slu.edu/wellbeing/index.php">the
+Well-being page of the SLU website</a>.</li>
+</ul>
+<p><strong>If you or someone you know is experiencing a crisis</strong>:
+please consult <a
+href="https://www.slu.edu/life-at-slu/university-counseling/index.php">Crisis
+Support and Warning Signs on the University Counseling Center
+website</a> or call the University Counseling Center at 314-977-TALK
+(8255) and press #9 to be connected to a behavioral health nurse
+24/7.</p>
+<h3 id="basic-needs-security">Basic Needs Security</h3>
+<p>Students experiencing food insecurity, housing insecurity, and any
+other challenges that are impacting their personal and/or academic
+wellbeing are encouraged to contact the Dean of Students Office for
+support. Students can submit an <a
+href="https://cm.maxient.com/reportingform.php?SaintLouisUniv&amp;layout_id=35">intake
+form</a>, email deanofstudents@slu.edu, or call 314-977-9378 to connect
+with their office. Students may also communicate directly with their
+instructors about any challenges they are experiencing to receive
+support and resource referrals.</p>
+<h2 id="weekly-cadence">Weekly Cadence</h2>
+<ul>
+<li><strong>Lectures:</strong> Tue/Thu, slide-based with worked
+examples; each Unit 3 lecture opens with a 5-minute “paper of the day”
+connecting lecture to primary literature.</li>
+<li><strong>Quizzes:</strong> short online reading quiz due before
+roughly one lecture per week (Canvas).</li>
+<li><strong>Homework:</strong> released ~every 2–3 weeks, due Thursdays
+11:59 PM (see schedule).</li>
+<li><strong>Office hours:</strong> Tue/Wed/Thu 2:00–3:00 PM in Ritter
+Hall 309; project-focused office hours after Oct 20.</li>
+</ul>
+</main>
+
+<footer>
+  <div class="wrap">CSCI 5845 · Natural Language Processing · Saint Louis University ·
+  Fall 2026 · <a href="https://jinzhao3611.github.io/">Jin Zhao</a></div>
+</footer>
+
+</body>
+</html>
