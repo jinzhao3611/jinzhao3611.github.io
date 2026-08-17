@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignments — CSCI 4845/5845 Natural Language Processing · Fall 2026</title>
+<link rel="stylesheet" href="course.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <span class="brand">CSCI 4845/5845 · NLP · Fall 2026</span>
+    <a href="index.html">Course Home</a>
+    <a href="schedule.html">Schedule</a>
+    <a href="assignments.html" class="active">Assignments</a>
+    <a href="project.html">Project</a>
+    <a href="syllabus-4845.html">Syllabus (4845 UG)</a>
+    <a href="syllabus-5845.html">Syllabus (5845 Grad)</a>
+    <a href="https://jinzhao3611.github.io/">Instructor</a>
+  </div>
+</nav>
+
+<main class="wrap">
+<h1 id="csci-48455845-fall-2026-homework-assignments">CSCI 4845/5845 ·
+Fall 2026 · Homework Assignments</h1>
+<p>Four graded assignments (10% each) plus an ungraded setup assignment.
+Each pairs programming with short written analysis, and each ends with a
+brief “reflection” question connecting the work to the current lecture
+arc. Due dates are Thursdays 11:59 PM on Canvas.</p>
+<p>Design principles: Units 1–2 homework is <strong>build it from
+scratch</strong> (the algorithms are the learning objective); Unit 3
+homework is <strong>use the modern stack well</strong> (the judgment is
+the learning objective). Everything is sized for Google Colab.</p>
+<p>AI-tool tiers per the syllabus: HW1–HW3 are Tier B (permitted with
+disclosure, but functions marked ★ must be written by you without AI
+assistance); HW4 is Tier A/B (LLM use required in parts, disclosure
+everywhere).</p>
+<p>Dual listing (CSCI 4845 vs. 5845): each of HW1–HW4 includes a marked
+<strong>graduate extension (“G part”)</strong> — a short additional
+experiment or analysis tied to a primary paper. Required for CSCI 5845
+(worth 10 of the 100 points; core parts scaled to 90); optional extra
+credit for CSCI 4845 (up to +3 points). G parts are listed with each
+assignment below.</p>
+<hr />
+<h2 id="hw0-setup-background-survey-ungraded">HW0 — Setup &amp;
+background survey (ungraded)</h2>
+<p><strong>Out Thu Aug 20 · “due” Tue Aug 25</strong></p>
+<ul>
+<li>Install Python environment / open the provided Colab; run a starter
+notebook (tokenize a file, load a small dataset, one PyTorch tensor
+exercise).</li>
+<li>Short background survey: prior ML exposure, Python comfort,
+interests (used to calibrate lectures 11–12 and to seed project team
+formation).</li>
+</ul>
+<h2 id="hw1-language-models-classification-from-scratch">HW1 — Language
+models &amp; classification from scratch</h2>
+<p><strong>Out Thu Aug 27 · Due Thu Sep 10 · Covers L2–L5</strong></p>
+<ol type="1">
+<li><strong>Text processing:</strong> regex exercises; build a word
+tokenizer; Zipf plot on a real corpus.</li>
+<li><strong>N-gram LM ★:</strong> implement bigram/trigram models with
+add-k and interpolation; report perplexity on held-out data; generate
+samples (save your samples — they return as a punchline in Unit 3).</li>
+<li><strong>Classification ★:</strong> Naive Bayes sentiment classifier
+from scratch (e.g., SST-2 or IMDB); compare against scikit-learn
+logistic regression; error analysis on 10 misclassified examples.</li>
+<li><strong>Written:</strong> smoothing math; precision/recall trade-off
+scenario.</li>
+<li><strong>G part (5845):</strong> implement Kneser-Ney (or
+Good-Turing) smoothing and compare held-out perplexity against add-k and
+interpolation; ~1 page of analysis.</li>
+</ol>
+<h2 id="hw2-embeddings-sequence-labeling">HW2 — Embeddings &amp;
+sequence labeling</h2>
+<p><strong>Out Thu Sep 10 · Due Thu Sep 24 · Covers L6–L9</strong></p>
+<ol type="1">
+<li><strong>Sparse vectors:</strong> build TF-IDF and PPMI vectors from
+a corpus; nearest-neighbor analysis.</li>
+<li><strong>word2vec:</strong> complete a scaffolded
+skip-gram-with-negative-sampling implementation ★ (loss
+<ul>
+<li>gradient functions); train on a small corpus; analogy and similarity
+evaluation; replicate a mini bias probe (WEAT-style) and discuss.</li>
+</ul></li>
+<li><strong>HMM tagger ★:</strong> implement Viterbi decoding for POS
+tagging on Universal Dependencies data; compare against a provided
+most-frequent-tag baseline; where does each fail?</li>
+<li><strong>Written:</strong> why negative sampling works; BIO tagging
+exercise.</li>
+<li><strong>G part (5845):</strong> extend the WEAT-style bias probe to
+a second embedding space (e.g., pretrained GloVe vs. your skip-gram
+vectors) and discuss the differences with reference to Caliskan et
+al. (2017).</li>
+</ol>
+<h2 id="hw3-build-a-transformer">HW3 — Build a Transformer</h2>
+<p><strong>Out Thu Sep 24 · Due Tue Oct 13 (before midterm) · Covers
+L11–L15 · ~3 weeks</strong></p>
+<ol type="1">
+<li><strong>Neural LM:</strong> train the Bengio-style feedforward LM on
+the HW1 corpus; compare perplexity with your trigram model (the
+semester’s central plot: same metric, new eras).</li>
+<li><strong>Mini-GPT ★:</strong> implement a decoder-only Transformer LM
+from a heavily-scaffolded skeleton (nanoGPT-style): attention,
+multi-head, causal masking, one block, then stack. Train at character
+level on a small corpus; plot loss curves; sample generations at several
+temperatures.</li>
+<li><strong>Fine-tuning:</strong> fine-tune DistilBERT on a
+classification task with the HuggingFace Trainer; compare with your HW1
+Naive Bayes on the same test set — accuracy, compute cost, and 5
+examples where they disagree.</li>
+<li><strong>Written:</strong> attention-weight hand calculation;
+parameter counting for your mini-GPT.</li>
+<li><strong>G part (5845):</strong> run one ablation on your mini-GPT
+(e.g., remove positional encodings, or single- vs. multi-head attention)
+and report the effect on loss curves and samples, connecting the result
+to Vaswani et al. (2017).</li>
+</ol>
+<h2 id="hw4-the-llm-toolkit">HW4 — The LLM toolkit</h2>
+<p><strong>Out Thu Oct 29 · Due Thu Nov 19 · Covers L17–L23 · ~3
+weeks</strong></p>
+<ol type="1">
+<li><strong>Prompting as experimentation:</strong> on a fixed task and
+test set (e.g., a reasoning or extraction benchmark slice), compare
+zero-shot, few-shot, and chain-of-thought prompting; report accuracy
+<strong>and cost per query</strong>; a structured-output (JSON schema)
+exercise.</li>
+<li><strong>RAG:</strong> build a small retrieval-augmented QA system
+over a provided document set (embed → index → retrieve → generate);
+evaluate faithfulness and answer quality; show one question where
+retrieval saves the model and one where it hurts.</li>
+<li><strong>LoRA fine-tuning:</strong> QLoRA-tune a small open-weight
+model (1–3B) on a narrow task in Colab; compare against prompting the
+same model and a larger API model: quality, latency, cost.</li>
+<li><strong>Written reflection:</strong> decision memo — for three
+scenarios (startup feature, enterprise internal tool, research
+experiment), which technique (prompt / RAG / fine-tune) and why.</li>
+<li><strong>G part (5845):</strong> validate an LLM-as-judge — score
+your RAG system’s answers with a judge prompt, hand-label 20 of the same
+examples yourself, and report judge–human agreement and any systematic
+bias you observe.</li>
+</ol>
+<p>API usage: course-provided credits cover the required experiments
+(~$5–10/student); every part has a local open-weight fallback path
+documented in the starter repo.</p>
+<hr />
+<h2 id="grading-logistics">Grading &amp; logistics</h2>
+<ul>
+<li>Each HW graded /100: ~70 implementation correctness (autograded
+where possible + spot checks), ~20 written analysis, ~10 reflection
+&amp; presentation quality. For CSCI 5845 these core parts are scaled to
+90 and the required G part is worth 10; for CSCI 4845 the G part is
+optional extra credit (up to +3).</li>
+<li>Late policy: 5 free late days/semester, ≤2 per assignment, then
+−10%/day, max 4 days.</li>
+<li>Starter code: one GitHub repo per assignment (template notebooks +
+unit tests), linked from Canvas.</li>
+</ul>
+</main>
+
+<footer>
+  <div class="wrap">CSCI 4845/5845 · Natural Language Processing · Saint Louis University ·
+  Fall 2026 · <a href="https://jinzhao3611.github.io/">Jin Zhao</a></div>
+</footer>
+
+</body>
+</html>
