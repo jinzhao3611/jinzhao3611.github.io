@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule — CSCI 4845/5845 Natural Language Processing · Fall 2026</title>
+<link rel="stylesheet" href="course.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <span class="brand">CSCI 4845/5845 · NLP · Fall 2026</span>
+    <a href="index.html">Course Home</a>
+    <a href="schedule.html" class="active">Schedule</a>
+    <a href="syllabus-4845.html">Syllabus (4845 UG)</a>
+    <a href="syllabus-5845.html">Syllabus (5845 Grad)</a>
+    <a href="https://jinzhao3611.github.io/">Instructor</a>
+  </div>
+</nav>
+
+<main class="wrap">
+<h1 id="csci-48455845-fall-2026-lecture-schedule">CSCI 4845/5845 · Fall
+2026 · Lecture Schedule</h1>
+<p>29 class meetings (Tue/Thu 11:00–12:15), Aug 20 – Dec 3, plus the
+registrar’s final-exam slot (Tue Dec 8, 12:00–1:50 PM) for project
+presentations. Key dates per the official SLU 2026–27 academic calendar:
+no classes Thu Oct 22 (Fall Break) and Thu Nov 26 (Thanksgiving); SLU
+mid-term exam week Oct 12–16; classes end Fri Dec 4; final exams Dec
+7–11.</p>
+<p>Readings: <strong>[SLP3 n]</strong> = Jurafsky &amp; Martin,
+<em>Speech and Language Processing</em> 3rd ed. draft, chapter
+<em>n</em> per the 2025 draft; <strong>[E n]</strong> = Eisenstein
+chapter <em>n</em>. Papers are the primary reading where listed.</p>
+<hr />
+<h2 id="unit-1-foundations-classical-nlp">Unit 1 — Foundations &amp;
+Classical NLP</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 12%" />
+<col style="width: 39%" />
+<col style="width: 18%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr>
+<th>#</th>
+<th>Date</th>
+<th>Topic &amp; key ideas</th>
+<th>Reading</th>
+<th>Out / Due</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Thu Aug 20</td>
+<td><strong>Welcome: What is NLP &amp; the three eras.</strong> Why
+language is hard (ambiguity, compositionality, variation); history from
+ELIZA and rules → statistics → neural nets → LLMs; course map: one
+thread from bigrams to reasoning models; logistics.</td>
+<td>SLP3 1; E 1</td>
+<td>HW0 out (setup, ungraded)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Tue Aug 25</td>
+<td><strong>Words &amp; text processing.</strong> Regular expressions;
+tokenization (word, sentence; BPE teaser); normalization,
+stemming/lemmatization; edit distance &amp; dynamic programming;
+corpora, annotation, Zipf’s law.</td>
+<td>SLP3 2</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Thu Aug 27</td>
+<td><strong>N-gram language models.</strong> Probability of a sentence;
+Markov assumption &amp; MLE; smoothing (Laplace, interpolation,
+Kneser-Ney intuition); backoff; <strong>perplexity</strong> — the metric
+that will follow us all semester; sampling from an LM.</td>
+<td>SLP3 3</td>
+<td><strong>HW1 out</strong></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Tue Sep 1</td>
+<td><strong>Text classification I: Naive Bayes.</strong> Bag of words;
+generative classification; NB training &amp; inference; sentiment
+analysis case study; evaluation: precision/recall/F1, cross-validation,
+statistical significance.</td>
+<td>SLP3 4</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Thu Sep 3</td>
+<td><strong>Text classification II: Logistic regression.</strong>
+Generative vs. discriminative; features &amp; feature engineering;
+cross-entropy loss, gradient descent, regularization;
+softmax/multinomial LR — the bridge to neural nets.</td>
+<td>SLP3 5</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Tue Sep 8</td>
+<td><strong>Vector semantics I: sparse vectors.</strong> Lexical
+semantics (synonymy, similarity, connotation); distributional
+hypothesis; term-document &amp; term-term matrices; TF-IDF, PPMI; cosine
+similarity; connection to information retrieval.</td>
+<td>SLP3 6.1–6.7</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Thu Sep 10</td>
+<td><strong>Vector semantics II: word embeddings.</strong> word2vec
+(skip-gram with negative sampling), GloVe, fastText; analogies &amp;
+their limits; embedding evaluation; <strong>bias in embeddings</strong>
+(first visit to a recurring theme).</td>
+<td>SLP3 6.8–end; word2vec paper (skim)</td>
+<td><strong>HW1 due; HW2 out</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Tue Sep 15</td>
+<td><strong>Sequence labeling I: POS tagging &amp; HMMs.</strong> Parts
+of speech &amp; tagsets; NER as BIO tagging; hidden Markov models; the
+Viterbi algorithm (worked example).</td>
+<td>SLP3 17 + Appendix (HMM)</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Thu Sep 17</td>
+<td><strong>Sequence labeling II: CRFs &amp; NER.</strong>
+Discriminative sequence models (MEMM → linear-chain CRF at a usable
+level); feature templates; NER systems &amp; span-level evaluation;
+where sequence labeling lives today.</td>
+<td>SLP3 17 (CRF §§)</td>
+<td></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Tue Sep 22</td>
+<td><strong>Syntax &amp; parsing in one day.</strong> Constituency:
+CFGs, treebanks, CKY; dependency grammar &amp; transition-based parsing;
+why parsing shaped the field, and what of it survives inside LLMs.</td>
+<td>SLP3 18–19 (skim)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="unit-2-neural-nlp-the-transformer">Unit 2 — Neural NLP &amp; the
+Transformer</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 12%" />
+<col style="width: 39%" />
+<col style="width: 18%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr>
+<th>#</th>
+<th>Date</th>
+<th>Topic &amp; key ideas</th>
+<th>Reading</th>
+<th>Out / Due</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>11</td>
+<td>Thu Sep 24</td>
+<td><strong>Neural networks for NLP.</strong> Feedforward nets, backprop
+&amp; computation graphs (refresher, self-contained); the Bengio neural
+LM — embeddings as learned features; PyTorch idioms for NLP.</td>
+<td>SLP3 7</td>
+<td><strong>HW2 due; HW3 out</strong></td>
+</tr>
+<tr>
+<td>12</td>
+<td>Tue Sep 29</td>
+<td><strong>RNNs &amp; LSTMs.</strong> Recurrence &amp; BPTT; vanishing
+gradients; LSTM/GRU gating; RNN language models; bidirectional RNNs for
+tagging; contextual embeddings (ELMo preview).</td>
+<td>SLP3 8</td>
+<td></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Thu Oct 1</td>
+<td><strong>Seq2seq, attention &amp; machine translation.</strong> MT as
+NLP’s grand challenge: rule-based &amp; statistical MT in brief;
+encoder–decoder; Bahdanau attention — the idea that ate the field; MT
+evaluation (BLEU, chrF, COMET, and their pitfalls).</td>
+<td>SLP3 13</td>
+<td></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Tue Oct 6</td>
+<td><strong>The Transformer I: self-attention.</strong> From recurrence
+to attention-only; queries/keys/values; scaled dot-product &amp;
+multi-head attention; positional encodings.</td>
+<td>SLP3 9; <em>Attention Is All You Need</em>; The Illustrated
+Transformer</td>
+<td></td>
+</tr>
+<tr>
+<td>15</td>
+<td>Thu Oct 8</td>
+<td><strong>The Transformer II: full architecture &amp;
+tokenization.</strong> Residuals &amp; LayerNorm, FFN blocks, encoder
+vs. decoder stacks, causal masking, teacher forcing; <strong>subword
+tokenization</strong> (BPE, WordPiece, SentencePiece) and its strange
+consequences.</td>
+<td>SLP3 9; Sennrich BPE paper</td>
+<td></td>
+</tr>
+<tr>
+<td>—</td>
+<td>Tue Oct 13</td>
+<td><strong>Midterm review &amp; catch-up.</strong> Worked problems
+spanning L1–15; buffer for any topic running behind; project team
+formation due.</td>
+<td>—</td>
+<td><strong>HW3 due</strong></td>
+</tr>
+<tr>
+<td>—</td>
+<td>Thu Oct 15</td>
+<td><strong>MIDTERM EXAM</strong> (in class; SLU midterm week is Oct
+12–16). Closed book, one handwritten sheet. Covers Lectures 1–15.</td>
+<td>—</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="unit-3-pretraining-the-llm-era">Unit 3 — Pretraining &amp; the
+LLM Era</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 12%" />
+<col style="width: 39%" />
+<col style="width: 18%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr>
+<th>#</th>
+<th>Date</th>
+<th>Topic &amp; key ideas</th>
+<th>Reading</th>
+<th>Out / Due</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>16</td>
+<td>Tue Oct 20</td>
+<td><strong>Pretraining I: BERT &amp; the encoder family.</strong>
+Transfer learning in NLP; ELMo → BERT; masked language modeling;
+fine-tuning for classification/QA; RoBERTa, sentence embeddings; where
+encoders still win in 2026.</td>
+<td>SLP3 11; BERT paper</td>
+<td>Project teams finalized</td>
+</tr>
+<tr>
+<td>—</td>
+<td>Thu Oct 22</td>
+<td><strong>No class — Fall Break</strong> (Oct 22–23).</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>17</td>
+<td>Tue Oct 27</td>
+<td><strong>Pretraining II: GPT &amp; the decoder-only
+paradigm.</strong> GPT-1/2/3: language models as few-shot learners; T5
+&amp; encoder–decoder; decoding algorithms (greedy, beam, temperature,
+top-k/top-p); the pivot the whole field took.</td>
+<td>SLP3 10; GPT-3 paper (skim)</td>
+<td></td>
+</tr>
+<tr>
+<td>18</td>
+<td>Thu Oct 29</td>
+<td><strong>Building an LLM: data &amp; scaling.</strong> Pretraining
+data pipelines (Common Crawl → filtered corpora), deduplication,
+contamination; scaling laws (Kaplan, <strong>Chinchilla</strong>); a
+feel for the compute (GPUs, distributed training); open-weight
+vs. closed models; emergent abilities &amp; the “mirage” debate.</td>
+<td>Chinchilla paper (skim); <em>Emergent Abilities</em> + <em>A
+Mirage?</em></td>
+<td><strong>HW4 out; project proposal due Fri Oct 30</strong></td>
+</tr>
+<tr>
+<td>19</td>
+<td>Tue Nov 3</td>
+<td><strong>Post-training: instruction tuning &amp; RLHF.</strong> Base
+model ≠ assistant; SFT/instruction tuning (FLAN, self-instruct); reward
+models &amp; PPO (InstructGPT); <strong>DPO</strong>; Constitutional
+AI/RLAIF; what alignment does and doesn’t buy you.</td>
+<td>SLP3 12; InstructGPT; DPO paper</td>
+<td></td>
+</tr>
+<tr>
+<td>20</td>
+<td>Thu Nov 5</td>
+<td><strong>Prompting &amp; in-context learning.</strong> Zero/few-shot
+prompting; why ICL works (hypotheses); chain-of-thought &amp;
+self-consistency; system prompts, structured output &amp; JSON schemas;
+prompt injection (first look at LLM security).</td>
+<td>CoT paper (Wei et al.); prompting guide</td>
+<td></td>
+</tr>
+<tr>
+<td>21</td>
+<td>Tue Nov 10</td>
+<td><strong>Efficient LLMs: adaptation &amp; inference.</strong> Full
+fine-tuning vs. PEFT; <strong>LoRA/QLoRA</strong>; quantization
+(8/4-bit); distillation &amp; small models; inference economics: KV
+cache, batching, speculative decoding; running models locally.</td>
+<td>LoRA paper; QLoRA (skim)</td>
+<td></td>
+</tr>
+<tr>
+<td>22</td>
+<td>Thu Nov 12</td>
+<td><strong>Retrieval-augmented generation.</strong> Why RAG: knowledge
+cutoffs, hallucination, private data; dense retrieval &amp; embedding
+models; chunking, vector indexes, reranking; evaluating RAG
+(faithfulness, relevance); long-context vs. RAG.</td>
+<td>SLP3 14; RAG paper (Lewis et al.)</td>
+<td></td>
+</tr>
+<tr>
+<td>23</td>
+<td>Tue Nov 17</td>
+<td><strong>Agents &amp; tool use.</strong> Function calling; ReAct
+&amp; planning loops; code agents; Model Context Protocol &amp; tool
+ecosystems; multi-agent systems; failure modes: compounding errors,
+prompt injection revisited.</td>
+<td>ReAct paper</td>
+<td></td>
+</tr>
+<tr>
+<td>24</td>
+<td>Thu Nov 19</td>
+<td><strong>Evaluating LLMs.</strong> From perplexity to benchmarks
+(MMLU, GSM8K, HumanEval); instruction-following evals; human evaluation
+&amp; arenas (Elo); <strong>LLM-as-judge</strong> and its biases;
+contamination &amp; saturation; building the eval your application
+actually needs.</td>
+<td>HELM or eval survey (skim)</td>
+<td><strong>HW4 due</strong></td>
+</tr>
+<tr>
+<td>25</td>
+<td>Tue Nov 24</td>
+<td><strong>Safety, bias &amp; interpretability.</strong> Harms
+taxonomy: stereotypes, toxicity, misinformation, privacy/memorization;
+hallucination; jailbreaks; interpretability: probing, attention
+analysis, a taste of mechanistic interpretability (induction heads,
+feature/SAE results).</td>
+<td><em>Stochastic Parrots</em> + a response; one interp reading</td>
+<td>Project milestone check-ins this week</td>
+</tr>
+<tr>
+<td>—</td>
+<td>Thu Nov 26</td>
+<td><strong>No class — Thanksgiving</strong> (break Nov 25–27).</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>26</td>
+<td>Tue Dec 1</td>
+<td><strong>Frontier &amp; open problems.</strong> Reasoning models
+&amp; test-time compute; multimodal LMs (vision-language); speech
+(Whisper/TTS) and multilingual/low-resource NLP in brief; what’s still
+unsolved; the full arc: n-grams → Transformers → RLHF → reasoning;
+careers &amp; where to go next.</td>
+<td>selected 2025–26 readings</td>
+<td></td>
+</tr>
+<tr>
+<td>—</td>
+<td>Thu Dec 3</td>
+<td><strong>Course wrap + presentation dry-runs.</strong> The full arc
+revisited; each team gets quick feedback on its near-final slides.</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>—</td>
+<td>Tue Dec 8, 12:00–1:50 PM (registrar’s exam slot)</td>
+<td><strong>Project presentations, all teams</strong> (8 min + 2 min
+Q&amp;A each). No written final exam.</td>
+<td>—</td>
+<td>Slides due Mon Dec 7, 11:59 AM; <strong>Final report due Fri Dec 11,
+11:59 PM</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="recurring-threads-called-out-across-lectures">Recurring threads
+(called out across lectures)</h2>
+<ul>
+<li><strong>Language modeling:</strong> L3 (n-grams) → L11–12 (neural
+LMs) → L15 (Transformer LM) → L17 (GPT) → L26 (reasoning models).</li>
+<li><strong>Evaluation:</strong> L4 (P/R/F1) → L13 (BLEU) → L24
+(benchmarks, LLM-as-judge).</li>
+<li><strong>Meaning representation:</strong> L6–7 (static vectors) →
+L12/L16 (contextual) → L22 (embeddings for retrieval).</li>
+<li><strong>Bias &amp; safety:</strong> L7 (embedding bias) → L19
+(alignment) → L25 (harms &amp; interpretability).</li>
+</ul>
+<h2 id="topics-deliberately-compressed">Topics deliberately
+compressed</h2>
+<p>Coreference, discourse, semantic role labeling, information
+extraction get pointers rather than lectures (SLP3 Part II covers them
+for interested students); speech gets ~20 minutes in L26 rather than a
+unit. A 29-session comprehensive course must spend its budget where the
+field’s center of mass is.</p>
+</main>
+
+<footer>
+  <div class="wrap">CSCI 4845/5845 · Natural Language Processing · Saint Louis University ·
+  Fall 2026 · <a href="https://jinzhao3611.github.io/">Jin Zhao</a></div>
+</footer>
+
+</body>
+</html>
