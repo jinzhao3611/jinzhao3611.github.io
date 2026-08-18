@@ -15,12 +15,12 @@
 // ---------------------------------------------------------------------------
 
 export const firebaseConfig = {
-  apiKey: "PASTE_ME",
-  authDomain: "PASTE_ME.firebaseapp.com",
-  projectId: "PASTE_ME",
-  storageBucket: "PASTE_ME.appspot.com",
-  messagingSenderId: "PASTE_ME",
-  appId: "PASTE_ME",
+  apiKey: "AIzaSyCX6nmQIR2LiniWeFAyPJBN2djfEG1B7yc",
+  authDomain: "csci4845-poll.firebaseapp.com",
+  projectId: "csci4845-poll",
+  storageBucket: "csci4845-poll.firebasestorage.app",
+  messagingSenderId: "951485567085",
+  appId: "1:951485567085:web:d535568375c7fc696caf64",
 };
 
 // Firestore documents live under courses/{COURSE}/...
