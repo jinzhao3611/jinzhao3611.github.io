@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presenter — In-Class Questions · CSCI 4845/5845</title>
+<link rel="stylesheet" href="poll.css">
+<script src="qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand">CSCI 4845/5845</span>
+  <span class="sub">In-class questions · presenter</span>
+  <a href="index.html">student view</a>
+</div>
+
+<div id="app" class="present-grid">
+  <div class="card"><p class="muted">Loading…</p></div>
+</div>
+
+<script type="module">
+import { firebaseConfig, COURSE, INSTRUCTOR_EMAILS, STUDENT_URL, configured } from "./firebase-config.js";
+import { renderMC, renderTextWall } from "./poll-ui.js";
+import { LEC01 } from "./questions-lec01.js";
+
+const app = document.getElementById("app");
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g,
+    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+if (!configured) {
+  app.innerHTML = `<div class="setup-warn" style="grid-column:1/-1"><strong>Not configured
+    yet.</strong> Paste your Firebase project config into <code>firebase-config.js</code> —
+    setup steps are in that file.</div>`;
+} else {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, orderBy, getDocs, serverTimestamp } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+  const fb = initializeApp(firebaseConfig);
+  const auth = getAuth(fb);
+  const db = getFirestore(fb);
+
+  let me = null;
+  let questions = [];
+  let activeQid = null;
+  let responses = [];
+  let unsubR = null;
+  let qrDrawn = false;
+
+  const isInstructor = (u) => !!u && !u.isAnonymous && INSTRUCTOR_EMAILS.includes(u.email);
+
+  function renderSignIn(msg) {
+    app.innerHTML = `
+      <div class="card" style="grid-column:1/-1;max-width:520px">
+        <p class="prompt">Presenter sign-in</p>
+        ${msg ? `<p class="muted">${esc(msg)}</p>` : ""}
+        <button class="btn" id="gsi">Sign in with Google</button>
+        <p class="tiny">Only ${esc(INSTRUCTOR_EMAILS.join(", "))} can control questions.</p>
+      </div>`;
+    document.getElementById("gsi").onclick = () =>
+      signInWithPopup(auth, new GoogleAuthProvider()).catch(e => renderSignIn(e.code));
+  }
+
+  function shell() {
+    app.innerHTML = `
+      <div class="sidebar">
+        <div class="card">
+          <p class="muted"><strong>Questions</strong></p>
+          <ul class="qlist" id="qlist"></ul>
+          <button class="btn secondary" id="btn-hide" style="width:100%">Hide question (blank screen)</button>
+          <button class="btn secondary" id="btn-seed" style="width:100%">Seed Lecture 1 set</button>
+          <button class="btn secondary" id="btn-csv" style="width:100%">Export responses CSV</button>
+          <p class="tiny">Signed in as ${esc(me.email)} · <a href="#" id="signout">sign out</a></p>
+        </div>
+        <div class="card qr-box">
+          <p class="muted"><strong>Students join at</strong></p>
+          <p class="join-url">jinzhao3611.github.io/csci4845/q</p>
+          <div class="qr" id="qr"></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="card" id="stage-card">
+          <p class="muted">No question is live. Click one on the left to put it on screen.</p>
+        </div>
+      </div>`;
+    document.getElementById("btn-hide").onclick = () => setControl(null);
+    document.getElementById("btn-seed").onclick = seedLec01;
+    document.getElementById("btn-csv").onclick = exportCSV;
+    document.getElementById("signout").onclick = (e) => { e.preventDefault(); signOut(auth); };
+    new QRCode(document.getElementById("qr"),
+      { text: STUDENT_URL, width: 210, height: 210, correctLevel: QRCode.CorrectLevel.M });
+    qrDrawn = true;
+    renderList(); renderStage();
+  }
+
+  function renderList() {
+    const ul = document.getElementById("qlist");
+    if (!ul) return;
+    ul.innerHTML = questions.length
+      ? questions.map(q => `
+          <li data-qid="${esc(q.id)}" class="${q.id === activeQid ? "live" : ""}">
+            <span class="qtype">${q.type === "mc" ? "MC" : "TEXT"}</span>${esc(q.prompt)}
+          </li>`).join("")
+      : `<li style="cursor:default"><span class="muted">No questions yet — use
+         “Seed Lecture 1 set”.</span></li>`;
+    for (const li of ul.querySelectorAll("li[data-qid]")) {
+      li.onclick = () => setControl(li.dataset.qid);
+    }
+  }
+
+  function renderStage() {
+    const card = document.getElementById("stage-card");
+    if (!card) return;
+    const q = questions.find(x => x.id === activeQid);
+    if (!q) {
+      card.innerHTML = `<p class="muted">No question is live. Click one on the left to put
+        it on screen.</p>`;
+      return;
+    }
+    const n = q.type === "mc"
+      ? responses.filter(r => Number.isInteger(r.choice)).length
+      : responses.filter(r => (r.text ?? "").trim()).length;
+    card.innerHTML = `
+      <p class="muted"><span class="count-pill">${n} answered</span></p>
+      <p class="prompt">${esc(q.prompt)}</p>
+      <div class="results" id="stage-results" aria-live="polite"></div>`;
+    const el = document.getElementById("stage-results");
+    if (q.type === "mc") renderMC(el, q, responses);
+    else renderTextWall(el, responses);
+  }
+
+  function setControl(qid) {
+    setDoc(doc(db, "courses", COURSE, "state", "control"),
+      { qid: qid ?? null, updatedAt: serverTimestamp() }).catch(alertErr);
+  }
+
+  async function seedLec01() {
+    try {
+      for (const q of LEC01) {
+        await setDoc(doc(db, "courses", COURSE, "questions", q.id), q);
+      }
+    } catch (e) { alertErr(e); }
+  }
+
+  async function exportCSV() {
+    try {
+      const qs = new Map(questions.map(q => [q.id, q]));
+      const snap = await getDocs(collection(db, "courses", COURSE, "responses"));
+      const rows = [["timestamp", "qid", "question", "type", "name", "email", "answer"]];
+      for (const d of snap.docs) {
+        const r = d.data();
+        const q = qs.get(r.qid);
+        const answer = q?.type === "mc"
+          ? (q.choices?.[r.choice] ?? String(r.choice ?? ""))
+          : (r.text ?? "");
+        rows.push([
+          r.ts?.toDate?.()?.toISOString?.() ?? "",
+          r.qid ?? "", q?.prompt ?? "", q?.type ?? "",
+          r.name ?? "", r.email ?? "", answer,
+        ]);
+      }
+      const csv = "﻿" + rows.map(row =>
+        row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\r\n");
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+      a.download = `csci4845-responses-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch (e) { alertErr(e); }
+  }
+
+  function alertErr(e) { console.error(e); alert(`Error: ${e.code || e.message}`); }
+
+  function watchResponses(qid) {
+    if (unsubR) { unsubR(); unsubR = null; }
+    responses = [];
+    if (!qid) { renderStage(); return; }
+    unsubR = onSnapshot(
+      query(collection(db, "courses", COURSE, "responses"), where("qid", "==", qid)),
+      (snap) => { responses = snap.docs.map(d => d.data()); renderStage(); });
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (!isInstructor(user)) {
+      me = null; qrDrawn = false;
+      renderSignIn(user ? `${user.email ?? "This account"} is not an instructor account.` : "");
+      return;
+    }
+    me = user;
+    shell();
+    onSnapshot(query(collection(db, "courses", COURSE, "questions"), orderBy("order")),
+      (snap) => { questions = snap.docs.map(d => d.data()); renderList(); renderStage(); });
+    onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {
+      const qid = snap.exists() ? (snap.data().qid ?? null) : null;
+      if (qid !== activeQid) { activeQid = qid; watchResponses(qid); }
+      renderList(); renderStage();
+    });
+  });
+}
+</script>
+
+</body>
+</html>

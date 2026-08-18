@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isInstructor() {
+      return request.auth != null
+        && request.auth.token.email in ['jin.zhao@slu.edu'];
+    }
+
+    // Which question is currently live (instructor writes, everyone reads).
+    match /courses/{course}/state/{docId} {
+      allow read: if request.auth != null;
+      allow write: if isInstructor();
+    }
+
+    // Question bank (instructor writes, everyone reads).
+    match /courses/{course}/questions/{qid} {
+      allow read: if request.auth != null;
+      allow write: if isInstructor();
+    }
+
+    // Responses: doc id is "{qid}_{uid}", so each student can only
+    // create/overwrite their own answer to a question. Everyone signed in
+    // (incl. anonymous students) can read, so live results render on
+    // every device.
+    match /courses/{course}/responses/{rid} {
+      allow read: if request.auth != null;
+      allow create, update: if isInstructor()
+        || (request.auth != null
+            && request.resource.data.uid == request.auth.uid
+            && rid == request.resource.data.qid + '_' + request.auth.uid);
+      allow delete: if isInstructor();
+    }
+  }
+}

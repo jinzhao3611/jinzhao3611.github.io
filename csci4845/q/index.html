@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In-Class Questions — CSCI 4845/5845 · Fall 2026</title>
+<link rel="stylesheet" href="poll.css">
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand">CSCI 4845/5845</span>
+  <span class="sub">In-class questions</span>
+  <a href="../index.html">course home</a>
+</div>
+
+<div class="student-wrap">
+  <div id="app">
+    <div class="card"><p class="muted">Loading…</p></div>
+  </div>
+  <p class="tiny">Responses are recorded with your name and SLU email for participation
+  credit. Free-text answers may be shown on the classroom screen without your name.</p>
+</div>
+
+<script type="module">
+import { firebaseConfig, COURSE, configured } from "./firebase-config.js";
+import { renderMC, renderTextWall } from "./poll-ui.js";
+
+const app = document.getElementById("app");
+
+if (!configured) {
+  app.innerHTML = `<div class="setup-warn"><strong>Not configured yet.</strong>
+    The instructor needs to paste the Firebase project config into
+    <code>firebase-config.js</code>. See that file for setup steps.</div>`;
+} else {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const { getAuth, signInAnonymously, onAuthStateChanged } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, serverTimestamp } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+  const fb = initializeApp(firebaseConfig);
+  const auth = getAuth(fb);
+  const db = getFirestore(fb);
+
+  const PROFILE_KEY = "csci4845-poll-profile";
+  let uid = null;
+  let profile = null;
+  try { profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null"); } catch { profile = null; }
+
+  let currentQid = null;
+  let question = null;
+  let myResponse = null;
+  let responses = [];
+  let unsubQ = null, unsubR = null;
+  let draftText = "";
+
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g,
+      c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function render() {
+    if (!profile) { renderProfileForm(); return; }
+    if (!currentQid || !question) {
+      app.innerHTML = `
+        <div class="card">
+          <p class="prompt">Waiting for the next question…</p>
+          <p class="muted">Keep this page open — it updates automatically when a
+          question goes live.</p>
+        </div>
+        ${whoAmI()}`;
+      wireChangeLink();
+      return;
+    }
+    if (question.type === "mc") renderMCQuestion();
+    else renderTextQuestion();
+    wireChangeLink();
+  }
+
+  function whoAmI() {
+    return `<p class="tiny">Answering as <strong>${esc(profile.name)}</strong>
+      (${esc(profile.email)}) · <a href="#" id="change-me">change</a></p>`;
+  }
+
+  function wireChangeLink() {
+    const a = document.getElementById("change-me");
+    if (a) a.onclick = (e) => { e.preventDefault(); profile = null; render(); };
+  }
+
+  function renderProfileForm() {
+    app.innerHTML = `
+      <div class="card">
+        <p class="prompt">Join in-class questions</p>
+        <label for="f-name">Name</label>
+        <input class="field" id="f-name" autocomplete="name" placeholder="First Last">
+        <label for="f-email">SLU email</label>
+        <input class="field" id="f-email" type="email" autocomplete="email" placeholder="you@slu.edu">
+        <p class="tiny">Used only for participation credit.</p>
+        <button class="btn" id="f-join">Join</button>
+        <p class="muted" id="f-err"></p>
+      </div>`;
+    document.getElementById("f-join").onclick = () => {
+      const name = document.getElementById("f-name").value.trim();
+      const email = document.getElementById("f-email").value.trim().toLowerCase();
+      const err = document.getElementById("f-err");
+      if (!name) { err.textContent = "Please enter your name."; return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "Please enter a valid email."; return; }
+      if (!email.endsWith("@slu.edu")) { err.textContent = "Please use your @slu.edu email."; return; }
+      profile = { name, email };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+      render();
+    };
+  }
+
+  async function submit(fields) {
+    await setDoc(doc(db, "courses", COURSE, "responses", `${currentQid}_${uid}`), {
+      qid: currentQid, uid,
+      name: profile.name, email: profile.email,
+      ts: serverTimestamp(),
+      ...fields,
+    });
+  }
+
+  function renderMCQuestion() {
+    const answered = myResponse != null;
+    app.innerHTML = `
+      <div class="card">
+        <p class="prompt">${esc(question.prompt)}</p>
+        <div id="choices">
+          ${question.choices.map((c, i) => `
+            <button class="choice-btn${answered && myResponse.choice === i ? " selected" : ""}"
+                    data-i="${i}">${esc(c)}</button>`).join("")}
+        </div>
+        ${answered ? `<p class="ok-badge">✓ Answer recorded — tap another choice to change it.</p>` : ""}
+      </div>
+      ${answered ? `<div class="card"><p class="muted"><strong>Live results</strong></p>
+                    <div class="results" id="results" aria-live="polite"></div></div>` : ""}
+      ${whoAmI()}`;
+    for (const b of app.querySelectorAll(".choice-btn")) {
+      b.onclick = () => submit({ choice: Number(b.dataset.i) }).catch(showErr);
+    }
+    if (answered) renderMC(document.getElementById("results"), question, responses);
+  }
+
+  function renderTextQuestion() {
+    const answered = myResponse != null && (myResponse.text ?? "").trim() !== "";
+    app.innerHTML = `
+      <div class="card">
+        <p class="prompt">${esc(question.prompt)}</p>
+        <textarea class="free-text" id="ft" maxlength="500"
+          placeholder="Type your answer…">${esc(draftText || myResponse?.text || "")}</textarea>
+        <button class="btn" id="ft-send">${answered ? "Update answer" : "Submit"}</button>
+        ${answered ? `<span class="ok-badge" style="margin-left:.6rem">✓ Answer recorded</span>` : ""}
+      </div>
+      ${answered ? `<div class="card"><p class="muted"><strong>Live responses</strong> (shown anonymously)</p>
+                    <div class="results" id="results" aria-live="polite"></div></div>` : ""}
+      ${whoAmI()}`;
+    const ta = document.getElementById("ft");
+    ta.oninput = () => { draftText = ta.value; };
+    document.getElementById("ft-send").onclick = () => {
+      const text = ta.value.trim();
+      if (!text) return;
+      submit({ text }).then(() => { draftText = ""; }).catch(showErr);
+    };
+    if (answered) renderTextWall(document.getElementById("results"), responses);
+  }
+
+  function showErr(e) {
+    console.error(e);
+    app.insertAdjacentHTML("afterbegin",
+      `<div class="setup-warn">Couldn't save your answer — check your connection and try
+       again. (${esc(e.code || e.message)})</div>`);
+  }
+
+  function watchQuestion(qid) {
+    if (unsubQ) { unsubQ(); unsubQ = null; }
+    if (unsubR) { unsubR(); unsubR = null; }
+    question = null; myResponse = null; responses = []; draftText = "";
+    if (!qid) { render(); return; }
+    unsubQ = onSnapshot(doc(db, "courses", COURSE, "questions", qid), (snap) => {
+      question = snap.exists() ? snap.data() : null;
+      render();
+    });
+    unsubR = onSnapshot(
+      query(collection(db, "courses", COURSE, "responses"), where("qid", "==", qid)),
+      (snap) => {
+        responses = snap.docs.map(d => d.data());
+        myResponse = responses.find(r => r.uid === uid) ?? null;
+        render();
+      });
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) return;
+    uid = user.uid;
+    onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {
+      const qid = snap.exists() ? (snap.data().qid ?? null) : null;
+      if (qid !== currentQid) { currentQid = qid; watchQuestion(qid); }
+    }, (e) => {
+      app.innerHTML = `<div class="setup-warn">Couldn't connect (${esc(e.code)}).
+        If this persists, tell the instructor.</div>`;
+    });
+    render();
+  });
+
+  signInAnonymously(auth).catch((e) => {
+    app.innerHTML = `<div class="setup-warn">Sign-in failed (${esc(e.code)}).
+      Anonymous sign-in may not be enabled in Firebase yet.</div>`;
+  });
+}
+</script>
+
+</body>
+</html>
