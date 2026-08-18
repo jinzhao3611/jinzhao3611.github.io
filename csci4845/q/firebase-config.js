@@ -28,7 +28,8 @@ export const COURSE = "csci4845-f26";
 
 // Only these Google accounts can control questions from present.html.
 // Must match the emails in firestore.rules.
-export const INSTRUCTOR_EMAILS = ["jin.zhao@slu.edu"];
+// (jin.zhao@slu.edu is not a Google account, so the personal Gmail is used.)
+export const INSTRUCTOR_EMAILS = ["jinzhao3611@gmail.com"];
 
 // URL the QR code points students to.
 export const STUDENT_URL = "https://jinzhao3611.github.io/csci4845/q/";

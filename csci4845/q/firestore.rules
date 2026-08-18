@@ -4,7 +4,7 @@ service cloud.firestore {
 
     function isInstructor() {
       return request.auth != null
-        && request.auth.token.email in ['jin.zhao@slu.edu'];
+        && request.auth.token.email in ['jinzhao3611@gmail.com'];
     }
 
     // Which question is currently live (instructor writes, everyone reads).
