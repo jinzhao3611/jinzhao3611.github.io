@@ -35,9 +35,7 @@ done
 sed -e 's/Verified against the official SLU 2026–27 academic calendar (published July 29, 2025):/Key dates per the official SLU 2026–27 academic calendar:/' \
     -e 's/ (re-check numbering against the current release)//' \
     -e 's/## Topics deliberately compressed (state this on day 1)/## Topics deliberately compressed/' \
-    "$SRC/schedule.md" \
-  | perl -0pe 's/\); speech gets ~20 minutes in L26\s+rather than a unit\. A 29-session comprehensive course must spend its budget where the field.s\s+center of mass is\./)./s' \
-  > "$TMP/schedule.md"
+    "$SRC/schedule.md" > "$TMP/schedule.md"
 pandoc "$TMP/schedule.md" -f markdown -t html -o "$TMP/body_schedule.html"
 
 # --- assignments: strip instructor-facing notes ---
