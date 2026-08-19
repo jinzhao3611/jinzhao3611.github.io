@@ -1,6 +1,6 @@
-// Lecture 1 question set — seeded from present.html ("Seed Lecture 1" button).
-// Add future lectures as additional files (questions-lec02.js, ...); the set
-// name comes from the id prefix ("lec01-q1" → set "lec01").
+// Lecture 1 question set — record of what was uploaded to Firestore (Aug 2026).
+// No longer imported by the app: new sets are added by pasting them into the
+// presenter's "Add question set…" box (see SETUP.md).
 
 export const LEC01 = [
   {

@@ -40,9 +40,9 @@ Firestore, whose free Spark tier is far above what 31 students generate.
    be public — Firebase web config is an identifier, not a secret. Access is
    controlled by the rules in step 3, which is why step 3 matters.)
 
-8. **Seed the questions.** Open `present.html`, sign in with your SLU Google
-   account, click **Seed Lecture 1 set**. The five Lecture 1 questions appear in
-   the sidebar.
+8. **Add the questions.** Open `present.html`, sign in, click **Add question
+   set…**, paste a set (format below), and click **Add set**. (The Lecture 1
+   intake set is already uploaded.)
 
 ---
 
@@ -57,13 +57,11 @@ Firestore, whose free Spark tier is far above what 31 students generate.
    wall, all updating in real time, next to the QR code students scan.
 3. Students work through the set at their own pace with Back/Next on their
    phones; each student's page starts at their first unanswered question.
-4. For grading and attendance:
-   - **Export responses CSV** — one row per answer (timestamp, set, question,
-     name, email, answer).
-   - **Export attendance CSV** — one row per student per set (name, email,
-     questions answered out of the set, first/last answer timestamps). This is
-     the per-session attendance sheet; out-of-class submissions are visible by
-     their timestamps.
+4. For grading and attendance: **Export responses CSV** — one row per answer
+   with timestamp, set, question, name, email, and answer. Attendance per
+   session = the distinct emails for that set (a pivot table by email × set,
+   or ask Claude to tally participation with the drop-4 rule at term's end);
+   out-of-class submissions are visible by their timestamps.
 
 ### Notes
 
@@ -81,17 +79,23 @@ Firestore, whose free Spark tier is far above what 31 students generate.
 
 ## Adding questions for later lectures
 
-Copy `questions-lec01.js` to `questions-lec02.js`, edit the questions, import
-it in `present.html` next to the `LEC01` import, and seed it the same way.
-Sets are grouped by the id prefix (`lec02-q1` → set `lec02`), so keep ids in
-that pattern. Each question is:
+Click **Add question set…** in the presenter sidebar, paste the set in this
+format, and click **Add set** — no code changes or deploys needed:
 
-```js
-{ id: "lec07-q1", order: 1, type: "mc",     // unique id; order = position in set
-  prompt: "…", choices: ["…", "…"] }        // choices only for type "mc"
-{ id: "lec07-q2", order: 2, type: "text",   // free response
-  prompt: "…" }
 ```
+set: lec02
+mc: Which smoothing method backs off to lower-order n-grams?
+- Laplace
+- Kneser-Ney
+- Stupid backoff
+text: One thing from Tuesday that's still unclear?
+```
+
+Ids and order are automatic (`lec02-q1`, `lec02-q2`, … top to bottom).
+Re-adding a set name overwrites its questions — fine for fixing typos, but
+don't reorder MC choices after students have answered (answers store the
+choice index), and if you shrink a set, delete the leftover question docs in
+the Firebase console (Firestore → Data → questions).
 
 `quizzes/quiz-bank.md` in the course repo holds 50 written MCQs with rationales —
 a ready supply of in-class questions for the rest of the semester.

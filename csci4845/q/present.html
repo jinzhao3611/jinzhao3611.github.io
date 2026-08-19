@@ -22,7 +22,6 @@
 <script type="module">
 import { firebaseConfig, COURSE, INSTRUCTOR_EMAILS, STUDENT_URL, configured } from "./firebase-config.js";
 import { renderMC, renderTextWall } from "./poll-ui.js";
-import { LEC01 } from "./questions-lec01.js";
 
 const app = document.getElementById("app");
 
@@ -80,9 +79,15 @@ if (!configured) {
           <select class="field" id="set-pick"></select>
           <button class="btn" id="btn-live" style="width:100%"></button>
           <p class="tiny" id="live-hint" style="margin:0.25rem 0 0.55rem"></p>
-          <button class="btn secondary" id="btn-seed" style="width:100%">Seed Lecture 1 set</button>
+          <button class="btn secondary" id="btn-add-set" style="width:100%">Add question set…</button>
+          <div id="add-set-box" style="display:none">
+            <textarea class="free-text" id="add-set-text" spellcheck="false"
+              placeholder="set: lec02&#10;mc: Which smoothing method backs off to lower-order n-grams?&#10;- Laplace&#10;- Kneser-Ney&#10;- Stupid backoff&#10;text: One thing from Tuesday that's still unclear?"></textarea>
+            <p class="tiny">First line “set: lec02”, then “mc: prompt” with “- choice”
+            lines, or “text: prompt”. Ids and order are automatic.</p>
+            <button class="btn" id="btn-add-go" style="width:100%">Add set</button>
+          </div>
           <button class="btn secondary" id="btn-csv" style="width:100%">Export responses CSV</button>
-          <button class="btn secondary" id="btn-att" style="width:100%">Export attendance CSV</button>
           <p class="tiny">Signed in as ${esc(me.email)} · <a href="#" id="signout">sign out</a></p>
         </div>
         <div class="card qr-box">
@@ -99,9 +104,12 @@ if (!configured) {
       watchSetResponses(); renderAll();
     };
     document.getElementById("btn-live").onclick = makeLive;
-    document.getElementById("btn-seed").onclick = seedLec01;
+    document.getElementById("btn-add-set").onclick = () => {
+      const box = document.getElementById("add-set-box");
+      box.style.display = box.style.display === "none" ? "" : "none";
+    };
+    document.getElementById("btn-add-go").onclick = addSet;
     document.getElementById("btn-csv").onclick = exportCSV;
-    document.getElementById("btn-att").onclick = exportAttendance;
     document.getElementById("signout").onclick = (e) => { e.preventDefault(); signOut(auth); };
     new QRCode(document.getElementById("qr"),
       { text: STUDENT_URL, width: 210, height: 210, correctLevel: QRCode.CorrectLevel.M });
@@ -139,8 +147,8 @@ if (!configured) {
     if (!stage) return;
     const qs = inView();
     if (!qs.length) {
-      stage.innerHTML = `<div class="card"><p class="muted">No questions in this set yet —
-        use “Seed Lecture 1 set”.</p></div>`;
+      stage.innerHTML = `<div class="card"><p class="muted">No questions yet —
+        use “Add question set…” in the sidebar.</p></div>`;
       return;
     }
     const people = new Set(responses.map(r => (r.email ?? r.uid ?? "").toLowerCase())).size;
@@ -184,13 +192,54 @@ if (!configured) {
     });
   }
 
-  async function seedLec01() {
-    try {
-      for (const q of LEC01) {
-        await setDoc(doc(db, "courses", COURSE, "questions", q.id),
-          { ...q, set: q.set ?? String(q.id).split("-")[0] });
+  // Paste format: "set: lec02", then "mc: prompt" with "- choice" lines,
+  // or "text: prompt". Ids (lec02-q1, …) and order are assigned automatically.
+  function parseSetText(txt) {
+    const lines = String(txt).split("\n").map(l => l.trim());
+    let set = null;
+    const qs = [];
+    for (const line of lines) {
+      if (!line) continue;
+      const mSet = line.match(/^set\s*:\s*(.+)$/i);
+      const mMc = line.match(/^mc\s*:\s*(.+)$/i);
+      const mText = line.match(/^text\s*:\s*(.+)$/i);
+      const mChoice = line.match(/^-\s*(.+)$/);
+      if (mSet) set = mSet[1].trim().toLowerCase();
+      else if (mMc) qs.push({ type: "mc", prompt: mMc[1].trim(), choices: [] });
+      else if (mText) qs.push({ type: "text", prompt: mText[1].trim() });
+      else if (mChoice) {
+        const q = qs.at(-1);
+        if (!q || q.type !== "mc") throw new Error(`A "- choice" line must follow an "mc:" question: "${line}"`);
+        q.choices.push(mChoice[1].trim());
+      } else {
+        throw new Error(`Couldn't parse line: "${line}"`);
       }
-    } catch (e) { alertErr(e); }
+    }
+    if (!set) throw new Error('Missing a "set: lecNN" line.');
+    if (!/^[a-z0-9_-]+$/.test(set)) throw new Error(`Set name "${set}" — use letters, digits, and dashes only.`);
+    if (!qs.length) throw new Error("No questions found.");
+    for (const q of qs) {
+      if (q.type === "mc" && q.choices.length < 2) {
+        throw new Error(`MC question "${q.prompt}" needs at least 2 choices.`);
+      }
+    }
+    return { set, docs: qs.map((q, i) => ({ ...q, id: `${set}-q${i + 1}`, order: i + 1, set })) };
+  }
+
+  async function addSet() {
+    const ta = document.getElementById("add-set-text");
+    try {
+      const { set, docs } = parseSetText(ta.value);
+      for (const q of docs) {
+        await setDoc(doc(db, "courses", COURSE, "questions", q.id), q);
+      }
+      ta.value = "";
+      document.getElementById("add-set-box").style.display = "none";
+      viewSet = set;
+      watchSetResponses(); renderAll();
+      alert(`Added set "${set}" (${docs.length} question${docs.length === 1 ? "" : "s"}). ` +
+            `Click "Make “${set}” live for students" when you're ready.`);
+    } catch (e) { alert(e.message || e.code || String(e)); }
   }
 
   function downloadCSV(rows, filename) {
@@ -222,42 +271,6 @@ if (!configured) {
         ]);
       }
       downloadCSV(rows, `csci4845-responses-${new Date().toISOString().slice(0, 10)}.csv`);
-    } catch (e) { alertErr(e); }
-  }
-
-  // One row per student per set — for attendance/participation grading.
-  async function exportAttendance() {
-    try {
-      const totals = new Map();
-      for (const q of questions) totals.set(qSet(q), (totals.get(qSet(q)) ?? 0) + 1);
-      const setOf = new Map(questions.map(q => [q.id, qSet(q)]));
-      const snap = await getDocs(collection(db, "courses", COURSE, "responses"));
-      const agg = new Map();
-      for (const d of snap.docs) {
-        const r = d.data();
-        const set = setOf.get(r.qid) ?? String(r.qid ?? "").split("-")[0];
-        const email = (r.email ?? "").toLowerCase();
-        const key = `${set}|${email}`;
-        const ts = r.ts?.toDate?.() ?? null;
-        let a = agg.get(key);
-        if (!a) { a = { set, email, name: r.name ?? "", qids: new Set(), first: ts, last: ts }; agg.set(key, a); }
-        a.qids.add(r.qid);
-        if (r.name) a.name = r.name;
-        if (ts && (!a.first || ts < a.first)) a.first = ts;
-        if (ts && (!a.last || ts > a.last)) a.last = ts;
-      }
-      const rows = [["set", "date", "name", "email", "questions_answered", "questions_in_set",
-                     "first_answer", "last_answer"]];
-      const sorted = [...agg.values()].sort((x, y) =>
-        x.set === y.set ? x.name.localeCompare(y.name) : x.set.localeCompare(y.set));
-      for (const a of sorted) {
-        rows.push([
-          a.set, a.first ? a.first.toISOString().slice(0, 10) : "",
-          a.name, a.email, a.qids.size, totals.get(a.set) ?? "",
-          a.first ? a.first.toISOString() : "", a.last ? a.last.toISOString() : "",
-        ]);
-      }
-      downloadCSV(rows, `csci4845-attendance-${new Date().toISOString().slice(0, 10)}.csv`);
     } catch (e) { alertErr(e); }
   }
 
