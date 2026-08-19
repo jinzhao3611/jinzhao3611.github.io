@@ -36,7 +36,7 @@ if (!configured) {
   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
   const { getAuth, signInAnonymously, onAuthStateChanged } =
     await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, serverTimestamp } =
+  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, orderBy, serverTimestamp } =
     await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
   const fb = initializeApp(firebaseConfig);
@@ -54,6 +54,10 @@ if (!configured) {
   let responses = [];
   let unsubQ = null, unsubR = null;
   let draftText = "";
+  let qlist = [];          // all questions, ordered — for student-paced browsing
+  let browseOn = false;    // instructor toggle in state/control
+  let browseIdx = 0;
+  let stateQid = null;     // the instructor's live question
 
   function esc(s) {
     return String(s ?? "").replace(/[&<>"']/g,
@@ -63,19 +67,49 @@ if (!configured) {
   function render() {
     if (!profile) { renderProfileForm(); return; }
     if (!currentQid || !question) {
-      app.innerHTML = `
-        <div class="card">
-          <p class="prompt">Waiting for the next question…</p>
-          <p class="muted">Keep this page open — it updates automatically when a
-          question goes live.</p>
-        </div>
+      const waiting = browseOn
+        ? `<p class="prompt">No questions posted yet.</p>
+           <p class="muted">Keep this page open — it updates automatically.</p>`
+        : `<p class="prompt">Waiting for the next question…</p>
+           <p class="muted">Keep this page open — it updates automatically when a
+           question goes live.</p>`;
+      app.innerHTML = `${browseNav()}
+        <div class="card">${waiting}</div>
         ${whoAmI()}`;
-      wireChangeLink();
+      wireChangeLink(); wireNav();
       return;
     }
     if (question.type === "mc") renderMCQuestion();
     else renderTextQuestion();
-    wireChangeLink();
+    wireChangeLink(); wireNav();
+  }
+
+  function browseNav() {
+    if (!browseOn || qlist.length === 0) return "";
+    return `<div class="browse-nav">
+      <button class="btn secondary" id="nav-prev" ${browseIdx === 0 ? "disabled" : ""}>‹ Back</button>
+      <span class="pos">Question ${browseIdx + 1} of ${qlist.length}</span>
+      <button class="btn secondary" id="nav-next" ${browseIdx >= qlist.length - 1 ? "disabled" : ""}>Next ›</button>
+    </div>`;
+  }
+
+  function wireNav() {
+    const p = document.getElementById("nav-prev"), n = document.getElementById("nav-next");
+    if (p) p.onclick = () => { if (browseIdx > 0) { browseIdx--; syncQuestion(); } };
+    if (n) n.onclick = () => { if (browseIdx < qlist.length - 1) { browseIdx++; syncQuestion(); } };
+  }
+
+  // Decide which question this device should show: the student's own position
+  // when browsing is on, otherwise the instructor's live question.
+  function syncQuestion() {
+    const qid = browseOn ? (qlist[browseIdx]?.id ?? null) : stateQid;
+    if (qid !== currentQid) {
+      currentQid = qid;
+      watchQuestion(qid);
+      if (browseOn && qid) { question = qlist[browseIdx] ?? null; render(); }
+    } else {
+      render();
+    }
   }
 
   function whoAmI() {
@@ -125,6 +159,7 @@ if (!configured) {
   function renderMCQuestion() {
     const answered = myResponse != null;
     app.innerHTML = `
+      ${browseNav()}
       <div class="card">
         <p class="prompt">${esc(question.prompt)}</p>
         <div id="choices">
@@ -146,6 +181,7 @@ if (!configured) {
   function renderTextQuestion() {
     const answered = myResponse != null && (myResponse.text ?? "").trim() !== "";
     app.innerHTML = `
+      ${browseNav()}
       <div class="card">
         <p class="prompt">${esc(question.prompt)}</p>
         <textarea class="free-text" id="ft" maxlength="500"
@@ -194,9 +230,21 @@ if (!configured) {
   onAuthStateChanged(auth, (user) => {
     if (!user) return;
     uid = user.uid;
+    onSnapshot(query(collection(db, "courses", COURSE, "questions"), orderBy("order")), (snap) => {
+      qlist = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (browseIdx >= qlist.length) browseIdx = Math.max(0, qlist.length - 1);
+      syncQuestion();
+    });
     onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {
-      const qid = snap.exists() ? (snap.data().qid ?? null) : null;
-      if (qid !== currentQid) { currentQid = qid; watchQuestion(qid); }
+      const wasBrowse = browseOn;
+      stateQid = snap.exists() ? (snap.data().qid ?? null) : null;
+      browseOn = snap.exists() && snap.data().browse === true;
+      // When browsing switches on, start from the instructor's current question.
+      if (browseOn && !wasBrowse && stateQid) {
+        const i = qlist.findIndex(q => q.id === stateQid);
+        if (i >= 0) browseIdx = i;
+      }
+      syncQuestion();
     }, (e) => {
       app.innerHTML = `<div class="setup-warn">Couldn't connect (${esc(e.code)}).
         If this persists, tell the instructor.</div>`;

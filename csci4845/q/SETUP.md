@@ -56,7 +56,12 @@ Firestore, whose free Spark tier is far above what 31 students generate.
    any student who has already answered.
 4. Click **Hide question (blank screen)** to clear the screen while you lecture,
    or click the next question when you're ready.
-5. After class (or at end of term), click **Export responses CSV** for grading —
+5. **Student-paced browsing** (toggle in the sidebar): when ON, students get
+   Back/Next buttons and move through the whole question set at their own speed —
+   ideal for the Lecture 1 intake survey. Leave it OFF for mid-lecture questions
+   so answers aren't visible ahead of your reveal. Your projected screen always
+   shows whichever question you clicked, in either mode.
+6. After class (or at end of term), click **Export responses CSV** for grading —
    one row per response with timestamp, question, name, email, and answer.
 
 ### Notes

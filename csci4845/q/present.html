@@ -52,6 +52,7 @@ if (!configured) {
   let responses = [];
   let unsubR = null;
   let qrDrawn = false;
+  let browseOn = false;
 
   const isInstructor = (u) => !!u && !u.isAnonymous && INSTRUCTOR_EMAILS.includes(u.email);
 
@@ -74,6 +75,8 @@ if (!configured) {
           <p class="muted"><strong>Questions</strong></p>
           <ul class="qlist" id="qlist"></ul>
           <button class="btn secondary" id="btn-hide" style="width:100%">Hide question (blank screen)</button>
+          <button class="btn secondary" id="btn-browse" style="width:100%"></button>
+          <p class="tiny" id="browse-hint" style="margin:0.25rem 0 0.55rem"></p>
           <button class="btn secondary" id="btn-seed" style="width:100%">Seed Lecture 1 set</button>
           <button class="btn secondary" id="btn-csv" style="width:100%">Export responses CSV</button>
           <p class="tiny">Signed in as ${esc(me.email)} · <a href="#" id="signout">sign out</a></p>
@@ -90,13 +93,28 @@ if (!configured) {
         </div>
       </div>`;
     document.getElementById("btn-hide").onclick = () => setControl(null);
+    document.getElementById("btn-browse").onclick = toggleBrowse;
     document.getElementById("btn-seed").onclick = seedLec01;
     document.getElementById("btn-csv").onclick = exportCSV;
     document.getElementById("signout").onclick = (e) => { e.preventDefault(); signOut(auth); };
     new QRCode(document.getElementById("qr"),
       { text: STUDENT_URL, width: 210, height: 210, correctLevel: QRCode.CorrectLevel.M });
     qrDrawn = true;
-    renderList(); renderStage();
+    renderList(); renderStage(); renderBrowseBtn();
+  }
+
+  function renderBrowseBtn() {
+    const b = document.getElementById("btn-browse");
+    if (b) b.textContent = `Student-paced browsing: ${browseOn ? "ON" : "OFF"}`;
+    const hint = document.getElementById("browse-hint");
+    if (hint) hint.textContent = browseOn
+      ? "Students can move through all questions at their own pace."
+      : "Students see only the question you make live.";
+  }
+
+  function toggleBrowse() {
+    setDoc(doc(db, "courses", COURSE, "state", "control"),
+      { qid: activeQid ?? null, browse: !browseOn, updatedAt: serverTimestamp() }).catch(alertErr);
   }
 
   function renderList() {
@@ -137,7 +155,7 @@ if (!configured) {
 
   function setControl(qid) {
     setDoc(doc(db, "courses", COURSE, "state", "control"),
-      { qid: qid ?? null, updatedAt: serverTimestamp() }).catch(alertErr);
+      { qid: qid ?? null, browse: browseOn, updatedAt: serverTimestamp() }).catch(alertErr);
   }
 
   async function seedLec01() {
@@ -198,8 +216,9 @@ if (!configured) {
       (snap) => { questions = snap.docs.map(d => d.data()); renderList(); renderStage(); });
     onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {
       const qid = snap.exists() ? (snap.data().qid ?? null) : null;
+      browseOn = snap.exists() && snap.data().browse === true;
       if (qid !== activeQid) { activeQid = qid; watchResponses(qid); }
-      renderList(); renderStage();
+      renderList(); renderStage(); renderBrowseBtn();
     });
   });
 }
