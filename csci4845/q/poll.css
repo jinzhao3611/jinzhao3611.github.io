@@ -126,6 +126,19 @@ label { font-size: 0.9rem; font-weight: 600; color: var(--ink-2); }
 .setup-warn { background: #fff8e6; border: 1px solid #f0dfa8; border-radius: 8px;
               padding: 0.8rem 1rem; margin: 1rem 0; font-size: 0.95rem; }
 
+/* ---------- presenter: all-questions grid ---------- */
+.stage-head { margin: 0 0 0.6rem; }
+.stage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+              gap: 0.9rem; }
+.stage-grid .card { margin: 0; }
+.stage-grid .prompt { font-size: 1.25rem; line-height: 1.3; }
+.stage-grid .bar-label { font-size: 0.95rem; }
+.stage-grid .bar-track { height: 24px; border-radius: 4px; }
+.stage-grid .bar-count { font-size: 0.95rem; flex-basis: 5rem; }
+.stage-grid .wall { grid-template-columns: 1fr; }
+.stage-grid .wall .note { font-size: 0.95rem; }
+.stage-grid .results-total { font-size: 0.92rem; }
+
 /* ---------- student-paced browsing nav ---------- */
 .browse-nav { display: flex; align-items: center; justify-content: space-between;
               gap: 0.6rem; margin: 0.9rem 0 0; }

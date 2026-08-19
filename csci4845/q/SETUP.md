@@ -46,36 +46,35 @@ Firestore, whose free Spark tier is far above what 31 students generate.
 
 ---
 
-## Running it in class (start-of-class question set)
+## Running it in class
 
-1. Open `present.html` on the projector and sign in. The QR code and join URL
-   are in the left sidebar — leave them up while students join.
-2. Pick today's set in the **Question set** dropdown and click **Open set —
-   students self-pace**. Students get Back/Next buttons and work through the
-   whole set on their own devices; click any question in the sidebar to project
-   its live distribution while they answer.
-3. Watch the counter (`N answered`) climb. Results update live for you and for
-   any student who has answered that question.
-4. After ~5 minutes, click **Close set** — student devices return to "waiting"
-   and class begins. You can still pose single questions mid-lecture: with the
-   set closed, click a question to make it live for everyone at once, and
-   **Hide question (blank screen)** to clear it.
-5. For grading and attendance:
+1. Once per lecture: open `present.html`, sign in, pick the day's set in the
+   dropdown, and click **Make "lecNN" live for students**. The set stays live
+   until you make the next one live — there is nothing to close — and each
+   student gets **one submission per question** (no changes after submitting).
+2. Leave the presenter page on the projector during the first ~5 minutes: it
+   shows **every question in the set** with its live distribution or response
+   wall, all updating in real time, next to the QR code students scan.
+3. Students work through the set at their own pace with Back/Next on their
+   phones; each student's page starts at their first unanswered question.
+4. For grading and attendance:
    - **Export responses CSV** — one row per answer (timestamp, set, question,
      name, email, answer).
    - **Export attendance CSV** — one row per student per set (name, email,
      questions answered out of the set, first/last answer timestamps). This is
-     the per-session attendance sheet.
+     the per-session attendance sheet; out-of-class submissions are visible by
+     their timestamps.
 
 ### Notes
 
 - **Students identify themselves once** with name + SLU email, stored in their
   browser, so later classes are one tap. Answers are recorded per student for
   participation credit; free-text answers are shown on screen **without names**.
-- **Changing an answer** is allowed while a question is live — a student's
-  document is overwritten, never duplicated.
-- **Late joiners** see whatever question is currently live, so a student who
-  arrives mid-question can still answer.
+- **One submission per question**, enforced by the database rules — after
+  submitting, an answer is locked; the student sees it alongside the live
+  results. (A mis-tap is protected by an explicit Submit button.)
+- **Late joiners** can still answer — the set stays open; the exports'
+  timestamps show who answered when.
 - Results are only shown to a student **after** they answer, so the distribution
   doesn't anchor their choice.
 

@@ -19,17 +19,17 @@ service cloud.firestore {
       allow write: if isInstructor();
     }
 
-    // Responses: doc id is "{qid}_{uid}", so each student can only
-    // create/overwrite their own answer to a question. Everyone signed in
-    // (incl. anonymous students) can read, so live results render on
-    // every device.
+    // Responses: doc id is "{qid}_{uid}", so each student can only create
+    // their own answer to a question — and only once (create, no update:
+    // answers lock after submission). Everyone signed in (incl. anonymous
+    // students) can read, so live results render on every device.
     match /courses/{course}/responses/{rid} {
       allow read: if request.auth != null;
-      allow create, update: if isInstructor()
+      allow create: if isInstructor()
         || (request.auth != null
             && request.resource.data.uid == request.auth.uid
             && rid == request.resource.data.qid + '_' + request.auth.uid);
-      allow delete: if isInstructor();
+      allow update, delete: if isInstructor();
     }
   }
 }

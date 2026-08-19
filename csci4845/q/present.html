@@ -48,15 +48,17 @@ if (!configured) {
 
   let me = null;
   let questions = [];
-  let activeQid = null;
-  let responses = [];
+  let liveSet = null;    // the set students can currently answer (state/control)
+  let viewSet = null;    // the set shown on this screen (sidebar dropdown)
+  let responses = [];    // responses for the questions of viewSet
   let unsubR = null;
-  let qrDrawn = false;
-  let browseOn = false;
-  let stateSet = null;   // set currently open for students (on state/control)
-  let viewSet = null;    // set selected in the sidebar dropdown
 
   const isInstructor = (u) => !!u && !u.isAnonymous && INSTRUCTOR_EMAILS.includes(u.email);
+
+  // A question's set: explicit field, else the id prefix ("lec01-q3" → "lec01").
+  const qSet = (q) => q.set ?? String(q.id).split("-")[0];
+  const setNames = () => [...new Set(questions.map(qSet))].sort();
+  const inView = () => questions.filter(q => qSet(q) === viewSet);
 
   function renderSignIn(msg) {
     app.innerHTML = `
@@ -74,14 +76,10 @@ if (!configured) {
     app.innerHTML = `
       <div class="sidebar">
         <div class="card">
-          <p class="muted"><strong>Questions</strong></p>
-          <label class="tiny" for="set-pick">Question set</label>
-          <select class="field" id="set-pick" style="margin:0.2rem 0 0.4rem"></select>
-          <ul class="qlist" id="qlist"></ul>
-          <button class="btn" id="btn-open-set" style="width:100%">Open set — students self-pace</button>
-          <button class="btn secondary" id="btn-close-set" style="width:100%">Close set</button>
-          <p class="tiny" id="browse-hint" style="margin:0.25rem 0 0.55rem"></p>
-          <button class="btn secondary" id="btn-hide" style="width:100%">Hide question (blank screen)</button>
+          <p class="muted"><strong>Question set</strong></p>
+          <select class="field" id="set-pick"></select>
+          <button class="btn" id="btn-live" style="width:100%"></button>
+          <p class="tiny" id="live-hint" style="margin:0.25rem 0 0.55rem"></p>
           <button class="btn secondary" id="btn-seed" style="width:100%">Seed Lecture 1 set</button>
           <button class="btn secondary" id="btn-csv" style="width:100%">Export responses CSV</button>
           <button class="btn secondary" id="btn-att" style="width:100%">Export attendance CSV</button>
@@ -93,107 +91,97 @@ if (!configured) {
           <div class="qr" id="qr"></div>
         </div>
       </div>
-      <div class="stage">
-        <div class="card" id="stage-card">
-          <p class="muted">No question is live. Click one on the left to put it on screen.</p>
-        </div>
+      <div class="stage" id="stage">
+        <div class="card"><p class="muted">Loading…</p></div>
       </div>`;
-    document.getElementById("btn-hide").onclick = () => setControl(null);
-    document.getElementById("btn-open-set").onclick = openSet;
-    document.getElementById("btn-close-set").onclick = closeSet;
     document.getElementById("set-pick").onchange = (e) => {
-      viewSet = e.target.value; renderList(); renderSetControls();
+      viewSet = e.target.value || null;
+      watchSetResponses(); renderAll();
     };
+    document.getElementById("btn-live").onclick = makeLive;
     document.getElementById("btn-seed").onclick = seedLec01;
     document.getElementById("btn-csv").onclick = exportCSV;
     document.getElementById("btn-att").onclick = exportAttendance;
     document.getElementById("signout").onclick = (e) => { e.preventDefault(); signOut(auth); };
     new QRCode(document.getElementById("qr"),
       { text: STUDENT_URL, width: 210, height: 210, correctLevel: QRCode.CorrectLevel.M });
-    qrDrawn = true;
-    renderSetPick(); renderList(); renderStage(); renderSetControls();
+    renderAll();
   }
-
-  // A question's set: explicit field, else the id prefix ("lec01-q3" → "lec01").
-  const qSet = (q) => q.set ?? String(q.id).split("-")[0];
-  const setNames = () => [...new Set(questions.map(qSet))].sort();
-  const inView = () => questions.filter(q => !viewSet || qSet(q) === viewSet);
 
   function renderSetPick() {
     const sel = document.getElementById("set-pick");
     if (!sel) return;
     const names = setNames();
     if (!viewSet || !names.includes(viewSet)) {
-      viewSet = (stateSet && names.includes(stateSet)) ? stateSet : (names.at(-1) ?? null);
+      viewSet = (liveSet && names.includes(liveSet)) ? liveSet : (names.at(-1) ?? null);
     }
     sel.innerHTML = names.length
-      ? names.map(s => `<option value="${esc(s)}"${s === viewSet ? " selected" : ""}>${esc(s)}</option>`).join("")
+      ? names.map(s => `<option value="${esc(s)}"${s === viewSet ? " selected" : ""}>${esc(s)}${s === liveSet ? " (live)" : ""}</option>`).join("")
       : `<option value="">(no questions yet)</option>`;
   }
 
-  function renderSetControls() {
-    const open = document.getElementById("btn-open-set");
-    const close = document.getElementById("btn-close-set");
-    const hint = document.getElementById("browse-hint");
-    if (open) open.disabled = !inView().length;
-    if (close) close.disabled = !browseOn;
-    if (hint) hint.textContent = browseOn
-      ? `Set “${stateSet ?? "all"}” is open — students answer at their own pace.`
-      : "Set closed — students see only the question you make live.";
-  }
-
-  function openSet() {
-    const qs = inView();
-    if (!qs.length) return;
-    setDoc(doc(db, "courses", COURSE, "state", "control"),
-      { qid: qs[0].id, set: viewSet, browse: true, updatedAt: serverTimestamp() }).catch(alertErr);
-  }
-
-  function closeSet() {
-    setDoc(doc(db, "courses", COURSE, "state", "control"),
-      { qid: null, set: stateSet, browse: false, updatedAt: serverTimestamp() }).catch(alertErr);
-  }
-
-  function renderList() {
-    const ul = document.getElementById("qlist");
-    if (!ul) return;
-    const qs = inView();
-    ul.innerHTML = qs.length
-      ? qs.map(q => `
-          <li data-qid="${esc(q.id)}" class="${q.id === activeQid ? "live" : ""}">
-            <span class="qtype">${q.type === "mc" ? "MC" : "TEXT"}</span>${esc(q.prompt)}
-          </li>`).join("")
-      : `<li style="cursor:default"><span class="muted">No questions in this set yet — use
-         “Seed Lecture 1 set”.</span></li>`;
-    for (const li of ul.querySelectorAll("li[data-qid]")) {
-      li.onclick = () => setControl(li.dataset.qid);
+  function renderLiveBtn() {
+    const b = document.getElementById("btn-live");
+    const hint = document.getElementById("live-hint");
+    if (b) {
+      if (!viewSet) { b.textContent = "Make set live"; b.disabled = true; }
+      else if (viewSet === liveSet) { b.textContent = `“${viewSet}” is live`; b.disabled = true; }
+      else { b.textContent = `Make “${viewSet}” live for students`; b.disabled = false; }
     }
+    if (hint) hint.textContent = liveSet
+      ? `Students can open and answer “${liveSet}” anytime — one submission per question.`
+      : "No set is live yet — students see a waiting screen.";
   }
 
+  // The projected view: every question in the selected set, all results live.
   function renderStage() {
-    const card = document.getElementById("stage-card");
-    if (!card) return;
-    const q = questions.find(x => x.id === activeQid);
-    if (!q) {
-      card.innerHTML = `<p class="muted">No question is live. Click one on the left to put
-        it on screen.</p>`;
+    const stage = document.getElementById("stage");
+    if (!stage) return;
+    const qs = inView();
+    if (!qs.length) {
+      stage.innerHTML = `<div class="card"><p class="muted">No questions in this set yet —
+        use “Seed Lecture 1 set”.</p></div>`;
       return;
     }
-    const n = q.type === "mc"
-      ? responses.filter(r => Number.isInteger(r.choice)).length
-      : responses.filter(r => (r.text ?? "").trim()).length;
-    card.innerHTML = `
-      <p class="muted"><span class="count-pill">${n} answered</span></p>
-      <p class="prompt">${esc(q.prompt)}</p>
-      <div class="results" id="stage-results" aria-live="polite"></div>`;
-    const el = document.getElementById("stage-results");
-    if (q.type === "mc") renderMC(el, q, responses);
-    else renderTextWall(el, responses);
+    const people = new Set(responses.map(r => (r.email ?? r.uid ?? "").toLowerCase())).size;
+    stage.innerHTML = `
+      <p class="muted stage-head"><span class="count-pill">${people} student${people === 1 ? "" : "s"} answered</span>
+        &nbsp;Set “${esc(viewSet)}”${viewSet === liveSet ? " · live" : " · not live"}</p>
+      <div class="stage-grid">
+        ${qs.map((q, i) => `
+          <div class="card">
+            <p class="prompt">${i + 1}. ${esc(q.prompt)}</p>
+            <div class="results" id="res-${esc(q.id)}" aria-live="polite"></div>
+          </div>`).join("")}
+      </div>`;
+    for (const q of qs) {
+      const el = document.getElementById(`res-${q.id}`);
+      const rs = responses.filter(r => r.qid === q.id);
+      if (q.type === "mc") renderMC(el, q, rs);
+      else renderTextWall(el, rs);
+    }
   }
 
-  function setControl(qid) {
+  function renderAll() { renderSetPick(); renderLiveBtn(); renderStage(); }
+
+  function makeLive() {
+    if (!viewSet) return;
     setDoc(doc(db, "courses", COURSE, "state", "control"),
-      { qid: qid ?? null, set: stateSet, browse: browseOn, updatedAt: serverTimestamp() }).catch(alertErr);
+      { set: viewSet, updatedAt: serverTimestamp() }).catch(alertErr);
+  }
+
+  function watchSetResponses() {
+    if (unsubR) { unsubR(); unsubR = null; }
+    responses = [];
+    const ids = inView().map(q => q.id);
+    if (!ids.length) { renderStage(); return; }
+    const src = ids.length <= 30
+      ? query(collection(db, "courses", COURSE, "responses"), where("qid", "in", ids))
+      : collection(db, "courses", COURSE, "responses");
+    unsubR = onSnapshot(src, (snap) => {
+      responses = snap.docs.map(d => d.data()).filter(r => ids.includes(r.qid));
+      renderStage();
+    });
   }
 
   async function seedLec01() {
@@ -275,18 +263,9 @@ if (!configured) {
 
   function alertErr(e) { console.error(e); alert(`Error: ${e.code || e.message}`); }
 
-  function watchResponses(qid) {
-    if (unsubR) { unsubR(); unsubR = null; }
-    responses = [];
-    if (!qid) { renderStage(); return; }
-    unsubR = onSnapshot(
-      query(collection(db, "courses", COURSE, "responses"), where("qid", "==", qid)),
-      (snap) => { responses = snap.docs.map(d => d.data()); renderStage(); });
-  }
-
   onAuthStateChanged(auth, (user) => {
     if (!isInstructor(user)) {
-      me = null; qrDrawn = false;
+      me = null;
       renderSignIn(user ? `${user.email ?? "This account"} is not an instructor account.` : "");
       return;
     }
@@ -295,14 +274,11 @@ if (!configured) {
     onSnapshot(collection(db, "courses", COURSE, "questions"), (snap) => {
       questions = snap.docs.map(d => d.data()).sort((a, b) =>
         qSet(a) === qSet(b) ? (a.order ?? 0) - (b.order ?? 0) : (qSet(a) < qSet(b) ? -1 : 1));
-      renderSetPick(); renderList(); renderStage(); renderSetControls();
+      renderSetPick(); watchSetResponses(); renderAll();
     });
     onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {
-      const qid = snap.exists() ? (snap.data().qid ?? null) : null;
-      browseOn = snap.exists() && snap.data().browse === true;
-      stateSet = snap.exists() ? (snap.data().set ?? null) : null;
-      if (qid !== activeQid) { activeQid = qid; watchResponses(qid); }
-      renderSetPick(); renderList(); renderStage(); renderSetControls();
+      liveSet = snap.exists() ? (snap.data().set ?? null) : null;
+      renderAll();
     });
   });
 }
