@@ -46,23 +46,26 @@ Firestore, whose free Spark tier is far above what 31 students generate.
 
 ---
 
-## Running it in class
+## Running it in class (start-of-class question set)
 
 1. Open `present.html` on the projector and sign in. The QR code and join URL
    are in the left sidebar — leave them up while students join.
-2. Click a question in the sidebar to put it live. Students' phones switch to it
-   automatically; no refresh needed.
+2. Pick today's set in the **Question set** dropdown and click **Open set —
+   students self-pace**. Students get Back/Next buttons and work through the
+   whole set on their own devices; click any question in the sidebar to project
+   its live distribution while they answer.
 3. Watch the counter (`N answered`) climb. Results update live for you and for
-   any student who has already answered.
-4. Click **Hide question (blank screen)** to clear the screen while you lecture,
-   or click the next question when you're ready.
-5. **Student-paced browsing** (toggle in the sidebar): when ON, students get
-   Back/Next buttons and move through the whole question set at their own speed —
-   ideal for the Lecture 1 intake survey. Leave it OFF for mid-lecture questions
-   so answers aren't visible ahead of your reveal. Your projected screen always
-   shows whichever question you clicked, in either mode.
-6. After class (or at end of term), click **Export responses CSV** for grading —
-   one row per response with timestamp, question, name, email, and answer.
+   any student who has answered that question.
+4. After ~5 minutes, click **Close set** — student devices return to "waiting"
+   and class begins. You can still pose single questions mid-lecture: with the
+   set closed, click a question to make it live for everyone at once, and
+   **Hide question (blank screen)** to clear it.
+5. For grading and attendance:
+   - **Export responses CSV** — one row per answer (timestamp, set, question,
+     name, email, answer).
+   - **Export attendance CSV** — one row per student per set (name, email,
+     questions answered out of the set, first/last answer timestamps). This is
+     the per-session attendance sheet.
 
 ### Notes
 
@@ -78,12 +81,13 @@ Firestore, whose free Spark tier is far above what 31 students generate.
 
 ## Adding questions for later lectures
 
-Either write them from the presenter console, or copy
-`questions-lec01.js` to `questions-lec02.js`, edit, and import it in
-`present.html` next to the `LEC01` import. Each question is:
+Copy `questions-lec01.js` to `questions-lec02.js`, edit the questions, import
+it in `present.html` next to the `LEC01` import, and seed it the same way.
+Sets are grouped by the id prefix (`lec02-q1` → set `lec02`), so keep ids in
+that pattern. Each question is:
 
 ```js
-{ id: "lec07-q1", order: 1, type: "mc",     // unique id; order = sidebar position
+{ id: "lec07-q1", order: 1, type: "mc",     // unique id; order = position in set
   prompt: "…", choices: ["…", "…"] }        // choices only for type "mc"
 { id: "lec07-q2", order: 2, type: "text",   // free response
   prompt: "…" }

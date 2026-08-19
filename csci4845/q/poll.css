@@ -61,12 +61,12 @@ textarea.free-text:focus { outline: none; border-color: var(--bar); }
 .btn.secondary { background: #fff; color: var(--brand); border: 2px solid var(--brand); }
 .btn:disabled { opacity: 0.5; cursor: default; }
 
-input.field {
-  width: 100%; font: inherit; font-size: 1rem;
+input.field, select.field {
+  width: 100%; font: inherit; font-size: 1rem; background: #fff; color: var(--ink);
   border: 2px solid var(--line); border-radius: 8px; padding: 0.55rem 0.7rem;
   margin: 0.3rem 0 0.7rem;
 }
-input.field:focus { outline: none; border-color: var(--bar); }
+input.field:focus, select.field:focus { outline: none; border-color: var(--bar); }
 label { font-size: 0.9rem; font-weight: 600; color: var(--ink-2); }
 
 .ok-badge { color: #1a7a3a; font-weight: 600; font-size: 0.92rem; }

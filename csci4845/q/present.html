@@ -39,7 +39,7 @@ if (!configured) {
   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
   const { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } =
     await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, orderBy, getDocs, serverTimestamp } =
+  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, getDocs, serverTimestamp } =
     await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
   const fb = initializeApp(firebaseConfig);
@@ -53,6 +53,8 @@ if (!configured) {
   let unsubR = null;
   let qrDrawn = false;
   let browseOn = false;
+  let stateSet = null;   // set currently open for students (on state/control)
+  let viewSet = null;    // set selected in the sidebar dropdown
 
   const isInstructor = (u) => !!u && !u.isAnonymous && INSTRUCTOR_EMAILS.includes(u.email);
 
@@ -73,12 +75,16 @@ if (!configured) {
       <div class="sidebar">
         <div class="card">
           <p class="muted"><strong>Questions</strong></p>
+          <label class="tiny" for="set-pick">Question set</label>
+          <select class="field" id="set-pick" style="margin:0.2rem 0 0.4rem"></select>
           <ul class="qlist" id="qlist"></ul>
-          <button class="btn secondary" id="btn-hide" style="width:100%">Hide question (blank screen)</button>
-          <button class="btn secondary" id="btn-browse" style="width:100%"></button>
+          <button class="btn" id="btn-open-set" style="width:100%">Open set — students self-pace</button>
+          <button class="btn secondary" id="btn-close-set" style="width:100%">Close set</button>
           <p class="tiny" id="browse-hint" style="margin:0.25rem 0 0.55rem"></p>
+          <button class="btn secondary" id="btn-hide" style="width:100%">Hide question (blank screen)</button>
           <button class="btn secondary" id="btn-seed" style="width:100%">Seed Lecture 1 set</button>
           <button class="btn secondary" id="btn-csv" style="width:100%">Export responses CSV</button>
+          <button class="btn secondary" id="btn-att" style="width:100%">Export attendance CSV</button>
           <p class="tiny">Signed in as ${esc(me.email)} · <a href="#" id="signout">sign out</a></p>
         </div>
         <div class="card qr-box">
@@ -93,39 +99,71 @@ if (!configured) {
         </div>
       </div>`;
     document.getElementById("btn-hide").onclick = () => setControl(null);
-    document.getElementById("btn-browse").onclick = toggleBrowse;
+    document.getElementById("btn-open-set").onclick = openSet;
+    document.getElementById("btn-close-set").onclick = closeSet;
+    document.getElementById("set-pick").onchange = (e) => {
+      viewSet = e.target.value; renderList(); renderSetControls();
+    };
     document.getElementById("btn-seed").onclick = seedLec01;
     document.getElementById("btn-csv").onclick = exportCSV;
+    document.getElementById("btn-att").onclick = exportAttendance;
     document.getElementById("signout").onclick = (e) => { e.preventDefault(); signOut(auth); };
     new QRCode(document.getElementById("qr"),
       { text: STUDENT_URL, width: 210, height: 210, correctLevel: QRCode.CorrectLevel.M });
     qrDrawn = true;
-    renderList(); renderStage(); renderBrowseBtn();
+    renderSetPick(); renderList(); renderStage(); renderSetControls();
   }
 
-  function renderBrowseBtn() {
-    const b = document.getElementById("btn-browse");
-    if (b) b.textContent = `Student-paced browsing: ${browseOn ? "ON" : "OFF"}`;
+  // A question's set: explicit field, else the id prefix ("lec01-q3" → "lec01").
+  const qSet = (q) => q.set ?? String(q.id).split("-")[0];
+  const setNames = () => [...new Set(questions.map(qSet))].sort();
+  const inView = () => questions.filter(q => !viewSet || qSet(q) === viewSet);
+
+  function renderSetPick() {
+    const sel = document.getElementById("set-pick");
+    if (!sel) return;
+    const names = setNames();
+    if (!viewSet || !names.includes(viewSet)) {
+      viewSet = (stateSet && names.includes(stateSet)) ? stateSet : (names.at(-1) ?? null);
+    }
+    sel.innerHTML = names.length
+      ? names.map(s => `<option value="${esc(s)}"${s === viewSet ? " selected" : ""}>${esc(s)}</option>`).join("")
+      : `<option value="">(no questions yet)</option>`;
+  }
+
+  function renderSetControls() {
+    const open = document.getElementById("btn-open-set");
+    const close = document.getElementById("btn-close-set");
     const hint = document.getElementById("browse-hint");
+    if (open) open.disabled = !inView().length;
+    if (close) close.disabled = !browseOn;
     if (hint) hint.textContent = browseOn
-      ? "Students can move through all questions at their own pace."
-      : "Students see only the question you make live.";
+      ? `Set “${stateSet ?? "all"}” is open — students answer at their own pace.`
+      : "Set closed — students see only the question you make live.";
   }
 
-  function toggleBrowse() {
+  function openSet() {
+    const qs = inView();
+    if (!qs.length) return;
     setDoc(doc(db, "courses", COURSE, "state", "control"),
-      { qid: activeQid ?? null, browse: !browseOn, updatedAt: serverTimestamp() }).catch(alertErr);
+      { qid: qs[0].id, set: viewSet, browse: true, updatedAt: serverTimestamp() }).catch(alertErr);
+  }
+
+  function closeSet() {
+    setDoc(doc(db, "courses", COURSE, "state", "control"),
+      { qid: null, set: stateSet, browse: false, updatedAt: serverTimestamp() }).catch(alertErr);
   }
 
   function renderList() {
     const ul = document.getElementById("qlist");
     if (!ul) return;
-    ul.innerHTML = questions.length
-      ? questions.map(q => `
+    const qs = inView();
+    ul.innerHTML = qs.length
+      ? qs.map(q => `
           <li data-qid="${esc(q.id)}" class="${q.id === activeQid ? "live" : ""}">
             <span class="qtype">${q.type === "mc" ? "MC" : "TEXT"}</span>${esc(q.prompt)}
           </li>`).join("")
-      : `<li style="cursor:default"><span class="muted">No questions yet — use
+      : `<li style="cursor:default"><span class="muted">No questions in this set yet — use
          “Seed Lecture 1 set”.</span></li>`;
     for (const li of ul.querySelectorAll("li[data-qid]")) {
       li.onclick = () => setControl(li.dataset.qid);
@@ -155,22 +193,33 @@ if (!configured) {
 
   function setControl(qid) {
     setDoc(doc(db, "courses", COURSE, "state", "control"),
-      { qid: qid ?? null, browse: browseOn, updatedAt: serverTimestamp() }).catch(alertErr);
+      { qid: qid ?? null, set: stateSet, browse: browseOn, updatedAt: serverTimestamp() }).catch(alertErr);
   }
 
   async function seedLec01() {
     try {
       for (const q of LEC01) {
-        await setDoc(doc(db, "courses", COURSE, "questions", q.id), q);
+        await setDoc(doc(db, "courses", COURSE, "questions", q.id),
+          { ...q, set: q.set ?? String(q.id).split("-")[0] });
       }
     } catch (e) { alertErr(e); }
+  }
+
+  function downloadCSV(rows, filename) {
+    const csv = "﻿" + rows.map(row =>
+      row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\r\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 
   async function exportCSV() {
     try {
       const qs = new Map(questions.map(q => [q.id, q]));
       const snap = await getDocs(collection(db, "courses", COURSE, "responses"));
-      const rows = [["timestamp", "qid", "question", "type", "name", "email", "answer"]];
+      const rows = [["timestamp", "set", "qid", "question", "type", "name", "email", "answer"]];
       for (const d of snap.docs) {
         const r = d.data();
         const q = qs.get(r.qid);
@@ -179,17 +228,48 @@ if (!configured) {
           : (r.text ?? "");
         rows.push([
           r.ts?.toDate?.()?.toISOString?.() ?? "",
+          q ? qSet(q) : String(r.qid ?? "").split("-")[0],
           r.qid ?? "", q?.prompt ?? "", q?.type ?? "",
           r.name ?? "", r.email ?? "", answer,
         ]);
       }
-      const csv = "﻿" + rows.map(row =>
-        row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\r\n");
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-      a.download = `csci4845-responses-${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(a.href);
+      downloadCSV(rows, `csci4845-responses-${new Date().toISOString().slice(0, 10)}.csv`);
+    } catch (e) { alertErr(e); }
+  }
+
+  // One row per student per set — for attendance/participation grading.
+  async function exportAttendance() {
+    try {
+      const totals = new Map();
+      for (const q of questions) totals.set(qSet(q), (totals.get(qSet(q)) ?? 0) + 1);
+      const setOf = new Map(questions.map(q => [q.id, qSet(q)]));
+      const snap = await getDocs(collection(db, "courses", COURSE, "responses"));
+      const agg = new Map();
+      for (const d of snap.docs) {
+        const r = d.data();
+        const set = setOf.get(r.qid) ?? String(r.qid ?? "").split("-")[0];
+        const email = (r.email ?? "").toLowerCase();
+        const key = `${set}|${email}`;
+        const ts = r.ts?.toDate?.() ?? null;
+        let a = agg.get(key);
+        if (!a) { a = { set, email, name: r.name ?? "", qids: new Set(), first: ts, last: ts }; agg.set(key, a); }
+        a.qids.add(r.qid);
+        if (r.name) a.name = r.name;
+        if (ts && (!a.first || ts < a.first)) a.first = ts;
+        if (ts && (!a.last || ts > a.last)) a.last = ts;
+      }
+      const rows = [["set", "date", "name", "email", "questions_answered", "questions_in_set",
+                     "first_answer", "last_answer"]];
+      const sorted = [...agg.values()].sort((x, y) =>
+        x.set === y.set ? x.name.localeCompare(y.name) : x.set.localeCompare(y.set));
+      for (const a of sorted) {
+        rows.push([
+          a.set, a.first ? a.first.toISOString().slice(0, 10) : "",
+          a.name, a.email, a.qids.size, totals.get(a.set) ?? "",
+          a.first ? a.first.toISOString() : "", a.last ? a.last.toISOString() : "",
+        ]);
+      }
+      downloadCSV(rows, `csci4845-attendance-${new Date().toISOString().slice(0, 10)}.csv`);
     } catch (e) { alertErr(e); }
   }
 
@@ -212,13 +292,17 @@ if (!configured) {
     }
     me = user;
     shell();
-    onSnapshot(query(collection(db, "courses", COURSE, "questions"), orderBy("order")),
-      (snap) => { questions = snap.docs.map(d => d.data()); renderList(); renderStage(); });
+    onSnapshot(collection(db, "courses", COURSE, "questions"), (snap) => {
+      questions = snap.docs.map(d => d.data()).sort((a, b) =>
+        qSet(a) === qSet(b) ? (a.order ?? 0) - (b.order ?? 0) : (qSet(a) < qSet(b) ? -1 : 1));
+      renderSetPick(); renderList(); renderStage(); renderSetControls();
+    });
     onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {
       const qid = snap.exists() ? (snap.data().qid ?? null) : null;
       browseOn = snap.exists() && snap.data().browse === true;
+      stateSet = snap.exists() ? (snap.data().set ?? null) : null;
       if (qid !== activeQid) { activeQid = qid; watchResponses(qid); }
-      renderList(); renderStage(); renderBrowseBtn();
+      renderSetPick(); renderList(); renderStage(); renderSetControls();
     });
   });
 }

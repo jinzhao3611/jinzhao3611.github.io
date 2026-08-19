@@ -36,7 +36,7 @@ if (!configured) {
   const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
   const { getAuth, signInAnonymously, onAuthStateChanged } =
     await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
-  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, orderBy, serverTimestamp } =
+  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, serverTimestamp } =
     await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
   const fb = initializeApp(firebaseConfig);
@@ -56,8 +56,14 @@ if (!configured) {
   let draftText = "";
   let qlist = [];          // all questions, ordered — for student-paced browsing
   let browseOn = false;    // instructor toggle in state/control
-  let browseIdx = 0;
+  let browseIdx = 0;       // position within the browsable (open-set) list
   let stateQid = null;     // the instructor's live question
+  let stateSet = null;     // the set currently open for self-paced answering
+
+  // A question's set: explicit field, else the id prefix ("lec01-q3" → "lec01").
+  const qSet = (q) => q.set ?? String(q.id).split("-")[0];
+  // What this student may browse: the open set if one is named, else everything.
+  const browseList = () => stateSet ? qlist.filter(q => qSet(q) === stateSet) : qlist;
 
   function esc(s) {
     return String(s ?? "").replace(/[&<>"']/g,
@@ -85,28 +91,30 @@ if (!configured) {
   }
 
   function browseNav() {
-    if (!browseOn || qlist.length === 0) return "";
+    const bl = browseList();
+    if (!browseOn || bl.length === 0) return "";
     return `<div class="browse-nav">
       <button class="btn secondary" id="nav-prev" ${browseIdx === 0 ? "disabled" : ""}>‹ Back</button>
-      <span class="pos">Question ${browseIdx + 1} of ${qlist.length}</span>
-      <button class="btn secondary" id="nav-next" ${browseIdx >= qlist.length - 1 ? "disabled" : ""}>Next ›</button>
+      <span class="pos">Question ${browseIdx + 1} of ${bl.length}</span>
+      <button class="btn secondary" id="nav-next" ${browseIdx >= bl.length - 1 ? "disabled" : ""}>Next ›</button>
     </div>`;
   }
 
   function wireNav() {
     const p = document.getElementById("nav-prev"), n = document.getElementById("nav-next");
     if (p) p.onclick = () => { if (browseIdx > 0) { browseIdx--; syncQuestion(); } };
-    if (n) n.onclick = () => { if (browseIdx < qlist.length - 1) { browseIdx++; syncQuestion(); } };
+    if (n) n.onclick = () => { if (browseIdx < browseList().length - 1) { browseIdx++; syncQuestion(); } };
   }
 
   // Decide which question this device should show: the student's own position
-  // when browsing is on, otherwise the instructor's live question.
+  // in the open set when browsing is on, otherwise the instructor's live question.
   function syncQuestion() {
-    const qid = browseOn ? (qlist[browseIdx]?.id ?? null) : stateQid;
+    const bl = browseList();
+    const qid = browseOn ? (bl[browseIdx]?.id ?? null) : stateQid;
     if (qid !== currentQid) {
       currentQid = qid;
       watchQuestion(qid);
-      if (browseOn && qid) { question = qlist[browseIdx] ?? null; render(); }
+      if (browseOn && qid) { question = bl[browseIdx] ?? null; render(); }
     } else {
       render();
     }
@@ -230,20 +238,24 @@ if (!configured) {
   onAuthStateChanged(auth, (user) => {
     if (!user) return;
     uid = user.uid;
-    onSnapshot(query(collection(db, "courses", COURSE, "questions"), orderBy("order")), (snap) => {
-      qlist = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      if (browseIdx >= qlist.length) browseIdx = Math.max(0, qlist.length - 1);
+    onSnapshot(collection(db, "courses", COURSE, "questions"), (snap) => {
+      qlist = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) =>
+        qSet(a) === qSet(b) ? (a.order ?? 0) - (b.order ?? 0) : (qSet(a) < qSet(b) ? -1 : 1));
+      if (browseIdx >= browseList().length) browseIdx = Math.max(0, browseList().length - 1);
       syncQuestion();
     });
     onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {
-      const wasBrowse = browseOn;
+      const wasBrowse = browseOn, prevSet = stateSet;
       stateQid = snap.exists() ? (snap.data().qid ?? null) : null;
       browseOn = snap.exists() && snap.data().browse === true;
-      // When browsing switches on, start from the instructor's current question.
-      if (browseOn && !wasBrowse && stateQid) {
-        const i = qlist.findIndex(q => q.id === stateQid);
-        if (i >= 0) browseIdx = i;
+      stateSet = snap.exists() ? (snap.data().set ?? null) : null;
+      // When browsing opens (or the open set changes), start from the
+      // instructor's current question if it's in the set, else the first one.
+      if (browseOn && (!wasBrowse || stateSet !== prevSet)) {
+        const i = stateQid ? browseList().findIndex(q => q.id === stateQid) : -1;
+        browseIdx = i >= 0 ? i : 0;
       }
+      if (browseIdx >= browseList().length) browseIdx = Math.max(0, browseList().length - 1);
       syncQuestion();
     }, (e) => {
       app.innerHTML = `<div class="setup-warn">Couldn't connect (${esc(e.code)}).

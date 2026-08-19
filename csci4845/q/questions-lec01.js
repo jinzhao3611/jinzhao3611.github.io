@@ -1,6 +1,6 @@
 // Lecture 1 question set — seeded from present.html ("Seed Lecture 1" button).
-// Add future lectures as additional files (questions-lec02.js, ...) or write
-// questions straight from the presenter console.
+// Add future lectures as additional files (questions-lec02.js, ...); the set
+// name comes from the id prefix ("lec01-q1" → set "lec01").
 
 export const LEC01 = [
   {
