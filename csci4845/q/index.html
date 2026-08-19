@@ -25,7 +25,6 @@
 
 <script type="module">
 import { firebaseConfig, COURSE, configured } from "./firebase-config.js";
-import { renderMC, renderTextWall } from "./poll-ui.js";
 
 const app = document.getElementById("app");
 
@@ -54,10 +53,9 @@ if (!configured) {
   let idx = 0;                 // position within the live set
   let currentQid = null;
   let question = null;
-  let responses = [];          // responses to the current question
-  let myAnswered = new Set();  // qids this device has answered (for ✓ / start position)
+  let myDocs = new Map();      // qid → my recorded answer (for ✓ / lock / start position)
   let jumpedFor = null;        // set we already auto-positioned for
-  let unsubQ = null, unsubR = null;
+  let unsubQ = null;
   let draftText = "";
   let selectedChoice = null;   // MC pick before submitting
 
@@ -70,14 +68,8 @@ if (!configured) {
   const qSet = (q) => q.set ?? String(q.id).split("-")[0];
   const setList = () => liveSet ? qlist.filter(q => qSet(q) === liveSet) : [];
 
-  // My recorded answer for the current question — by this device's uid, or by
-  // my email if I answered from another device. Locks the question either way.
-  function myResponse() {
-    return responses.find(r => r.uid === uid)
-      ?? (profile ? responses.find(r =>
-            (r.email ?? "").toLowerCase() === profile.email.toLowerCase()) : null)
-      ?? null;
-  }
+  // My recorded answer for the current question (locks it once present).
+  const myResponse = () => myDocs.get(currentQid) ?? null;
 
   function render() {
     if (!profile) { renderProfileForm(); return; }
@@ -101,7 +93,7 @@ if (!configured) {
   function nav() {
     const list = setList();
     if (list.length === 0) return "";
-    const done = myAnswered.has(currentQid) || myResponse() != null;
+    const done = myResponse() != null;
     return `<div class="browse-nav">
       <button class="btn secondary" id="nav-prev" ${idx === 0 ? "disabled" : ""}>‹ Back</button>
       <span class="pos">Question ${idx + 1} of ${list.length}${done ? " ✓" : ""}</span>
@@ -174,12 +166,11 @@ if (!configured) {
           }).join("")}
         </div>
         ${locked
-          ? `<p class="ok-badge">✓ Answer recorded</p>`
+          ? `<p class="ok-badge">✓ Answer recorded</p>
+             <p class="tiny">Results are shown on the classroom screen.</p>`
           : `<button class="btn" id="mc-send" ${selectedChoice == null ? "disabled" : ""}>Submit answer</button>
              <p class="tiny">One submission — you can't change it after submitting.</p>`}
       </div>
-      ${locked ? `<div class="card"><p class="muted"><strong>Live results</strong></p>
-                  <div class="results" id="results" aria-live="polite"></div></div>` : ""}
       ${whoAmI()}`;
     if (!locked) {
       for (const b of app.querySelectorAll(".choice-btn")) {
@@ -191,7 +182,6 @@ if (!configured) {
         submit({ choice: selectedChoice }).catch(showErr);
       };
     }
-    if (locked) renderMC(document.getElementById("results"), question, responses);
   }
 
   function renderTextQuestion() {
@@ -204,12 +194,11 @@ if (!configured) {
         <textarea class="free-text" id="ft" maxlength="500" ${locked ? "readonly" : ""}
           placeholder="Type your answer…">${esc(locked ? mine.text : draftText)}</textarea>
         ${locked
-          ? `<p class="ok-badge">✓ Answer recorded</p>`
+          ? `<p class="ok-badge">✓ Answer recorded</p>
+             <p class="tiny">Responses are shown anonymously on the classroom screen.</p>`
           : `<button class="btn" id="ft-send">Submit</button>
              <p class="tiny">One submission — you can't change it after submitting.</p>`}
       </div>
-      ${locked ? `<div class="card"><p class="muted"><strong>Live responses</strong> (shown anonymously)</p>
-                  <div class="results" id="results" aria-live="polite"></div></div>` : ""}
       ${whoAmI()}`;
     if (!locked) {
       const ta = document.getElementById("ft");
@@ -220,7 +209,6 @@ if (!configured) {
         submit({ text }).then(() => { draftText = ""; }).catch(showErr);
       };
     }
-    if (locked) renderTextWall(document.getElementById("results"), responses);
   }
 
   function showErr(e) {
@@ -233,16 +221,12 @@ if (!configured) {
 
   function watchQuestion(qid) {
     if (unsubQ) { unsubQ(); unsubQ = null; }
-    if (unsubR) { unsubR(); unsubR = null; }
-    question = null; responses = []; draftText = ""; selectedChoice = null;
+    question = null; draftText = ""; selectedChoice = null;
     if (!qid) { render(); return; }
     unsubQ = onSnapshot(doc(db, "courses", COURSE, "questions", qid), (snap) => {
       question = snap.exists() ? snap.data() : null;
       render();
     });
-    unsubR = onSnapshot(
-      query(collection(db, "courses", COURSE, "responses"), where("qid", "==", qid)),
-      (snap) => { responses = snap.docs.map(d => d.data()); render(); });
   }
 
   // Point the page at the question for the current position in the live set.
@@ -264,7 +248,7 @@ if (!configured) {
     if (!liveSet || jumpedFor === liveSet) return;
     const list = setList();
     if (!list.length) return;
-    const i = list.findIndex(q => !myAnswered.has(q.id));
+    const i = list.findIndex(q => !myDocs.has(q.id));
     idx = i >= 0 ? i : 0;
     jumpedFor = liveSet;
   }
@@ -280,7 +264,7 @@ if (!configured) {
     onSnapshot(
       query(collection(db, "courses", COURSE, "responses"), where("uid", "==", uid)),
       (snap) => {
-        myAnswered = new Set(snap.docs.map(d => d.data().qid));
+        myDocs = new Map(snap.docs.map(d => [d.data().qid, d.data()]));
         maybeJump(); sync();
       });
     onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {

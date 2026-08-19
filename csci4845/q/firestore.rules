@@ -21,10 +21,11 @@ service cloud.firestore {
 
     // Responses: doc id is "{qid}_{uid}", so each student can only create
     // their own answer to a question — and only once (create, no update:
-    // answers lock after submission). Everyone signed in (incl. anonymous
-    // students) can read, so live results render on every device.
+    // answers lock after submission). Students can read only their own
+    // responses; the full set (projected results, exports) is instructor-only.
     match /courses/{course}/responses/{rid} {
-      allow read: if request.auth != null;
+      allow read: if isInstructor()
+        || (request.auth != null && resource.data.uid == request.auth.uid);
       allow create: if isInstructor()
         || (request.auth != null
             && request.resource.data.uid == request.auth.uid

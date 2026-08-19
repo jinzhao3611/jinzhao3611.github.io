@@ -75,8 +75,9 @@ Firestore, whose free Spark tier is far above what 31 students generate.
   results. (A mis-tap is protected by an explicit Submit button.)
 - **Late joiners** can still answer — the set stays open; the exports'
   timestamps show who answered when.
-- Results are only shown to a student **after** they answer, so the distribution
-  doesn't anchor their choice.
+- **Results appear only on the presenter/projector screen** — student devices
+  never show the distribution, and the database rules only let each student
+  read their own responses.
 
 ## Adding questions for later lectures
 
