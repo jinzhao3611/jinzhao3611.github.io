@@ -97,7 +97,9 @@ note: One sentence is plenty.
 
 `mc:` is single choice, `multi:` is select-all-that-apply (both take `- choice`
 lines), `text:` is free text. An optional `note:` line right after a question
-adds a small hint under its prompt. Ids and order are automatic
+adds a small hint under its prompt. A line with no prefix continues the
+previous line (long lines copied from a terminal or editor may hard-wrap —
+that's fine). Ids and order are automatic
 (`lec02-q1`, `lec02-q2`, … top to bottom).
 Re-adding a set name overwrites its questions — fine for fixing typos, but
 don't reorder MC choices after students have answered (answers store the

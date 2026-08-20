@@ -199,10 +199,13 @@ if (!configured) {
   // "multi: prompt" (select all) with "- choice" lines, or "text: prompt".
   // An optional "note: hint" after a question shows as a small line under
   // its prompt. Ids (lec02-q1, …) and order are assigned automatically.
+  // An unprefixed line continues the previous prompt/note/choice — copying
+  // from a terminal or editor hard-wraps long lines mid-sentence.
   function parseSetText(txt) {
     const lines = String(txt).split("\n").map(l => l.trim());
     let set = null;
     const qs = [];
+    let extend = null; // appends a continuation line to the last parsed value
     for (const line of lines) {
       if (!line) continue;
       const mSet = line.match(/^set\s*:\s*(.+)$/i);
@@ -211,14 +214,24 @@ if (!configured) {
       const mText = line.match(/^text\s*:\s*(.+)$/i);
       const mNote = line.match(/^note\s*:\s*(.+)$/i);
       const mChoice = line.match(/^-\s*(.+)$/);
-      if (mSet) set = mSet[1].trim().toLowerCase();
-      else if (mMc) qs.push({ type: "mc", prompt: mMc[1].trim(), choices: [] });
-      else if (mMulti) qs.push({ type: "multi", prompt: mMulti[1].trim(), choices: [] });
-      else if (mText) qs.push({ type: "text", prompt: mText[1].trim() });
+      if (mSet) { set = mSet[1].trim().toLowerCase(); extend = null; }
+      else if (mMc) {
+        qs.push({ type: "mc", prompt: mMc[1].trim(), choices: [] });
+        extend = (s) => { qs.at(-1).prompt += " " + s; };
+      }
+      else if (mMulti) {
+        qs.push({ type: "multi", prompt: mMulti[1].trim(), choices: [] });
+        extend = (s) => { qs.at(-1).prompt += " " + s; };
+      }
+      else if (mText) {
+        qs.push({ type: "text", prompt: mText[1].trim() });
+        extend = (s) => { qs.at(-1).prompt += " " + s; };
+      }
       else if (mNote) {
         const q = qs.at(-1);
         if (!q) throw new Error(`A "note:" line must follow a question: "${line}"`);
         q.note = mNote[1].trim();
+        extend = (s) => { q.note += " " + s; };
       }
       else if (mChoice) {
         const q = qs.at(-1);
@@ -226,9 +239,10 @@ if (!configured) {
           throw new Error(`A "- choice" line must follow an "mc:" or "multi:" question: "${line}"`);
         }
         q.choices.push(mChoice[1].trim());
-      } else {
-        throw new Error(`Couldn't parse line: "${line}"`);
+        extend = (s) => { q.choices[q.choices.length - 1] += " " + s; };
       }
+      else if (extend) extend(line);
+      else throw new Error(`Couldn't parse line: "${line}"`);
     }
     if (!set) throw new Error('Missing a "set: lecNN" line.');
     if (!/^[a-z0-9_-]+$/.test(set)) throw new Error(`Set name "${set}" — use letters, digits, and dashes only.`);
