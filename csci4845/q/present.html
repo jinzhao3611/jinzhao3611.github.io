@@ -21,7 +21,7 @@
 
 <script type="module">
 import { firebaseConfig, COURSE, INSTRUCTOR_EMAILS, STUDENT_URL, configured } from "./firebase-config.js";
-import { renderMC, renderTextWall } from "./poll-ui.js";
+import { renderMC, renderMulti, renderTextWall } from "./poll-ui.js";
 
 const app = document.getElementById("app");
 
@@ -83,8 +83,9 @@ if (!configured) {
           <div id="add-set-box" style="display:none">
             <textarea class="free-text" id="add-set-text" spellcheck="false"
               placeholder="set: lec02&#10;mc: Which smoothing method backs off to lower-order n-grams?&#10;- Laplace&#10;- Kneser-Ney&#10;- Stupid backoff&#10;text: One thing from Tuesday that's still unclear?"></textarea>
-            <p class="tiny">First line “set: lec02”, then “mc: prompt” with “- choice”
-            lines, or “text: prompt”. Ids and order are automatic.</p>
+            <p class="tiny">First line “set: lec02”, then “mc: prompt” (single choice) or
+            “multi: prompt” (select all) with “- choice” lines, or “text: prompt”.
+            Optional “note: hint” after a question. Ids and order are automatic.</p>
             <button class="btn" id="btn-add-go" style="width:100%">Add set</button>
           </div>
           <button class="btn secondary" id="btn-csv" style="width:100%">Export responses CSV</button>
@@ -159,6 +160,7 @@ if (!configured) {
         ${qs.map((q, i) => `
           <div class="card">
             <p class="prompt">${i + 1}. ${esc(q.prompt)}</p>
+            ${q.note ? `<p class="tiny">${esc(q.note)}</p>` : ""}
             <div class="results" id="res-${esc(q.id)}" aria-live="polite"></div>
           </div>`).join("")}
       </div>`;
@@ -166,6 +168,7 @@ if (!configured) {
       const el = document.getElementById(`res-${q.id}`);
       const rs = responses.filter(r => r.qid === q.id);
       if (q.type === "mc") renderMC(el, q, rs);
+      else if (q.type === "multi") renderMulti(el, q, rs);
       else renderTextWall(el, rs);
     }
   }
@@ -192,8 +195,10 @@ if (!configured) {
     });
   }
 
-  // Paste format: "set: lec02", then "mc: prompt" with "- choice" lines,
-  // or "text: prompt". Ids (lec02-q1, …) and order are assigned automatically.
+  // Paste format: "set: lec02", then "mc: prompt" (single choice) or
+  // "multi: prompt" (select all) with "- choice" lines, or "text: prompt".
+  // An optional "note: hint" after a question shows as a small line under
+  // its prompt. Ids (lec02-q1, …) and order are assigned automatically.
   function parseSetText(txt) {
     const lines = String(txt).split("\n").map(l => l.trim());
     let set = null;
@@ -202,14 +207,24 @@ if (!configured) {
       if (!line) continue;
       const mSet = line.match(/^set\s*:\s*(.+)$/i);
       const mMc = line.match(/^mc\s*:\s*(.+)$/i);
+      const mMulti = line.match(/^multi\s*:\s*(.+)$/i);
       const mText = line.match(/^text\s*:\s*(.+)$/i);
+      const mNote = line.match(/^note\s*:\s*(.+)$/i);
       const mChoice = line.match(/^-\s*(.+)$/);
       if (mSet) set = mSet[1].trim().toLowerCase();
       else if (mMc) qs.push({ type: "mc", prompt: mMc[1].trim(), choices: [] });
+      else if (mMulti) qs.push({ type: "multi", prompt: mMulti[1].trim(), choices: [] });
       else if (mText) qs.push({ type: "text", prompt: mText[1].trim() });
+      else if (mNote) {
+        const q = qs.at(-1);
+        if (!q) throw new Error(`A "note:" line must follow a question: "${line}"`);
+        q.note = mNote[1].trim();
+      }
       else if (mChoice) {
         const q = qs.at(-1);
-        if (!q || q.type !== "mc") throw new Error(`A "- choice" line must follow an "mc:" question: "${line}"`);
+        if (!q || (q.type !== "mc" && q.type !== "multi")) {
+          throw new Error(`A "- choice" line must follow an "mc:" or "multi:" question: "${line}"`);
+        }
         q.choices.push(mChoice[1].trim());
       } else {
         throw new Error(`Couldn't parse line: "${line}"`);
@@ -219,8 +234,8 @@ if (!configured) {
     if (!/^[a-z0-9_-]+$/.test(set)) throw new Error(`Set name "${set}" — use letters, digits, and dashes only.`);
     if (!qs.length) throw new Error("No questions found.");
     for (const q of qs) {
-      if (q.type === "mc" && q.choices.length < 2) {
-        throw new Error(`MC question "${q.prompt}" needs at least 2 choices.`);
+      if ((q.type === "mc" || q.type === "multi") && q.choices.length < 2) {
+        throw new Error(`Choice question "${q.prompt}" needs at least 2 choices.`);
       }
     }
     return { set, docs: qs.map((q, i) => ({ ...q, id: `${set}-q${i + 1}`, order: i + 1, set })) };
@@ -262,7 +277,9 @@ if (!configured) {
         const q = qs.get(r.qid);
         const answer = q?.type === "mc"
           ? (q.choices?.[r.choice] ?? String(r.choice ?? ""))
-          : (r.text ?? "");
+          : q?.type === "multi"
+            ? (r.choices ?? []).map(i => q.choices?.[i] ?? String(i)).join("; ")
+            : (r.text ?? "");
         rows.push([
           r.ts?.toDate?.()?.toISOString?.() ?? "",
           q ? qSet(q) : String(r.qid ?? "").split("-")[0],

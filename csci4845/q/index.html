@@ -58,6 +58,7 @@ if (!configured) {
   let unsubQ = null;
   let draftText = "";
   let selectedChoice = null;   // MC pick before submitting
+  let selectedMulti = new Set(); // select-all picks before submitting
 
   function esc(s) {
     return String(s ?? "").replace(/[&<>"']/g,
@@ -86,6 +87,7 @@ if (!configured) {
       return;
     }
     if (question.type === "mc") renderMCQuestion();
+    else if (question.type === "multi") renderMultiQuestion();
     else renderTextQuestion();
     wireChangeLink(); wireNav();
   }
@@ -158,6 +160,7 @@ if (!configured) {
       ${nav()}
       <div class="card">
         <p class="prompt">${esc(question.prompt)}</p>
+        ${question.note ? `<p class="tiny">${esc(question.note)}</p>` : ""}
         <div id="choices">
           ${question.choices.map((c, i) => {
             const sel = locked ? mine.choice === i : selectedChoice === i;
@@ -184,6 +187,48 @@ if (!configured) {
     }
   }
 
+  // Select all that apply: taps toggle choices; submit records the index list.
+  function renderMultiQuestion() {
+    const mine = myResponse();
+    const locked = mine != null;
+    const picked = locked ? new Set(mine.choices ?? []) : selectedMulti;
+    app.innerHTML = `
+      ${nav()}
+      <div class="card">
+        <p class="prompt">${esc(question.prompt)}</p>
+        ${question.note ? `<p class="tiny">${esc(question.note)}</p>` : ""}
+        <p class="tiny">Select all that apply.</p>
+        <div id="choices">
+          ${question.choices.map((c, i) => {
+            const sel = picked.has(i);
+            return `<button class="choice-btn${sel ? " selected" : ""}"
+                      data-i="${i}" ${locked ? "disabled" : ""}>${esc(c)}</button>`;
+          }).join("")}
+        </div>
+        ${locked
+          ? `<p class="ok-badge">✓ Answer recorded</p>
+             <p class="tiny">Results are shown on the classroom screen.</p>`
+          : `<button class="btn" id="multi-send" ${picked.size === 0 ? "disabled" : ""}>Submit answer</button>
+             <p class="tiny">One submission — you can't change it after submitting.</p>`}
+      </div>
+      ${whoAmI()}`;
+    if (!locked) {
+      for (const b of app.querySelectorAll(".choice-btn")) {
+        b.onclick = () => {
+          const i = Number(b.dataset.i);
+          if (selectedMulti.has(i)) selectedMulti.delete(i);
+          else selectedMulti.add(i);
+          render();
+        };
+      }
+      const send = document.getElementById("multi-send");
+      if (send) send.onclick = () => {
+        if (selectedMulti.size === 0) return;
+        submit({ choices: [...selectedMulti].sort((a, b) => a - b) }).catch(showErr);
+      };
+    }
+  }
+
   function renderTextQuestion() {
     const mine = myResponse();
     const locked = mine != null && (mine.text ?? "").trim() !== "";
@@ -191,6 +236,7 @@ if (!configured) {
       ${nav()}
       <div class="card">
         <p class="prompt">${esc(question.prompt)}</p>
+        ${question.note ? `<p class="tiny">${esc(question.note)}</p>` : ""}
         <textarea class="free-text" id="ft" maxlength="500" ${locked ? "readonly" : ""}
           placeholder="Type your answer…">${esc(locked ? mine.text : draftText)}</textarea>
         ${locked
@@ -221,7 +267,7 @@ if (!configured) {
 
   function watchQuestion(qid) {
     if (unsubQ) { unsubQ(); unsubQ = null; }
-    question = null; draftText = ""; selectedChoice = null;
+    question = null; draftText = ""; selectedChoice = null; selectedMulti = new Set();
     if (!qid) { render(); return; }
     unsubQ = onSnapshot(doc(db, "courses", COURSE, "questions", qid), (snap) => {
       question = snap.exists() ? snap.data() : null;

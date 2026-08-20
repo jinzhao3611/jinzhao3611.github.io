@@ -36,6 +36,39 @@ export function renderMC(el, question, responses) {
       : `${total} response${total === 1 ? "" : "s"}`}</div>`;
 }
 
+// Select-all-that-apply: same rows as renderMC, but each response can tick
+// several choices, so percentages are "% of students" and can sum past 100.
+export function renderMulti(el, question, responses) {
+  const counts = question.choices.map(() => 0);
+  let total = 0;
+  for (const r of responses) {
+    const picks = Array.isArray(r.choices) ? r.choices : [];
+    if (!picks.length) continue;
+    total++;
+    for (const i of picks) {
+      if (Number.isInteger(i) && i >= 0 && i < counts.length) counts[i]++;
+    }
+  }
+  const max = Math.max(1, ...counts);
+
+  el.innerHTML = question.choices.map((c, i) => {
+    const n = counts[i];
+    const pct = total ? Math.round((100 * n) / total) : 0;
+    const w = total ? (100 * n) / max : 0;
+    return `
+      <div class="bar-row">
+        <div class="bar-label">${esc(c)}</div>
+        <div class="bar-line">
+          <div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div>
+          <div class="bar-count">${n} · ${pct}%</div>
+        </div>
+      </div>`;
+  }).join("") +
+  `<div class="results-total muted">${total === 0
+      ? "Waiting for responses…"
+      : `${total} response${total === 1 ? "" : "s"} · select all that apply`}</div>`;
+}
+
 // Free text: a wall of anonymous cards, newest first.
 export function renderTextWall(el, responses) {
   const texts = responses

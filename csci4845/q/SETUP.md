@@ -88,10 +88,17 @@ mc: Which smoothing method backs off to lower-order n-grams?
 - Laplace
 - Kneser-Ney
 - Stupid backoff
+multi: Which of these have you used? (select all that apply)
+- NLTK
+- spaCy
 text: One thing from Tuesday that's still unclear?
+note: One sentence is plenty.
 ```
 
-Ids and order are automatic (`lec02-q1`, `lec02-q2`, … top to bottom).
+`mc:` is single choice, `multi:` is select-all-that-apply (both take `- choice`
+lines), `text:` is free text. An optional `note:` line right after a question
+adds a small hint under its prompt. Ids and order are automatic
+(`lec02-q1`, `lec02-q2`, … top to bottom).
 Re-adding a set name overwrites its questions — fine for fixing typos, but
 don't reorder MC choices after students have answered (answers store the
 choice index), and if you shrink a set, delete the leftover question docs in
