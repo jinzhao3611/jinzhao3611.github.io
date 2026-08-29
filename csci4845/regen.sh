@@ -44,8 +44,14 @@ perl -0pe 's/\(students always love watching a trigram\s+model babble — save t
   "$SRC/assignments.md" > "$TMP/assignments.md"
 pandoc "$TMP/assignments.md" -f markdown -t html -o "$TMP/body_assignments.html"
 
-# --- project: student-ready as-is ---
-pandoc "$SRC/project.md" -f markdown -t html -o "$TMP/body_project.html"
+# --- project: swap the instructor file map for a Canvas pointer ---
+# project.md indexes the per-deliverable handouts by repo path; students cannot open
+# those, so the table and the studio-materials path become Canvas references here.
+perl -0pe 's/Per-deliverable instructions \(Canvas-ready, in `project\/`\):\n\n\| Deliverable \| File \|\n.*?\n\n/Detailed instructions for each deliverable — team declaration, proposal, milestone\ncheck-in, presentation, and final report — are posted on Canvas.\n\n/s;
+           s/The Oct 13 \*\*project studio\*\* materials \(workshop plan, student handout, deck\) live in\n`lectures\/project-studio\/`\./The Oct 13 **project studio** runs in class; the worksheet is handed out that day./s;
+           s/\n<!-- Compute resources.*?-->\n//s' \
+  "$SRC/project.md" > "$TMP/project.md"
+pandoc "$TMP/project.md" -f markdown -t html -o "$TMP/body_project.html"
 
 # --- shared page shell ---
 nav_link() { if [ "$3" = "$4" ]; then echo "    <a href=\"$1\" class=\"active\">$2</a>"; else echo "    <a href=\"$1\">$2</a>"; fi; }
