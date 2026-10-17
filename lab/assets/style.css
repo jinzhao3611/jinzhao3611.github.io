@@ -189,6 +189,8 @@ h2{font-size:51px;line-height:1.05;letter-spacing:-.03em;margin-bottom:18px}
 .contact-options .micro{font-size:9px;display:block;margin-bottom:15px}
 .contact-options h2{font-size:35px;margin-bottom:15px}
 .contact-options p{font-size:14px;line-height:1.9;color:#5f725e;margin-bottom:17px}
+.contact-options p a,.research-body p a{border-bottom:1px solid #9eaf97;padding-bottom:1px}
+.contact-options p a:hover,.research-body p a:hover{color:#607347;border-color:currentColor}
 
 @media(min-width:1500px){.hero{padding-top:90px;padding-bottom:84px}}
 @media(max-width:1080px){.shell{width:calc(100% - 64px)}.hero{gap:35px}.hero h1{font-size:70px}.hero-description{font-size:16px}.hero-actions{gap:18px}.hero-actions .button{gap:18px;padding:14px 19px}.hero-actions .text-link{font-size:12px}.story-board{padding:21px}.story p{font-size:23px}.section-heading{gap:50px}.theme-row{grid-template-columns:32px 1.1fr 1fr 24px;gap:16px}.theme-row h3{font-size:27px}.people-feature-inner{gap:25px}.people-feature h2{font-size:47px}.people-motif{transform:scale(.9);transform-origin:right center}.contact-teaser,.reading-note{gap:55px}.research-detail{grid-template-columns:1fr 2.2fr;gap:25px}.research-label{flex-direction:column;gap:12px}.contact-main{gap:42px}.contact-email{font-size:28px}}
