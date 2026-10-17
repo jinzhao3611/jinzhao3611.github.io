@@ -1,15 +1,20 @@
 <style>
+  /* NOTE (Oct 2026): the two sidebar rules below had never been loaded — this file
+     was not wired into the theme until _includes/head/custom.html was added. When
+     activated, the 300px sidebar overlaps the content column at 1024–1279px
+     viewports, and the avatar rule sizes the container, not the image, so the
+     avatar does not get bigger. Left here, disabled, for reference.
   #main > div.sidebar.sticky > div > div.author__avatar {
     max-width: 250px !important;
     width: 250px !important;
     height: auto !important;
     margin: 0 auto;
   }
-
-  /* Optional: increase sidebar width */
   .sidebar.sticky {
     width: 300px !important;
   }
+  */
+
 </style>
 
 <!-- Favicon -->
