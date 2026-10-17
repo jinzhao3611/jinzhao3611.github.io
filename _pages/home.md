@@ -13,9 +13,6 @@ different sources tell different stories about the same real-world events. My
 research connects **event understanding, computational framing, multilingual
 semantics, and human-centered AI**.
 
-**I am recruiting Ph.D. students and research assistants.**
-{: .notice--success}
-
 ---
 
 ## Contact & Links

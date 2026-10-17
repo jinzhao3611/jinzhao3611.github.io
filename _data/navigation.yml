@@ -4,10 +4,10 @@ main:
      url: /
    - title: "Research"
      url: /research/
+   - title: "TRACE AI Lab"
+     url: /lab/
    - title: "Publications"
      url: /pub/
-   - title: "People & Join"
-     url: /join/
    - title: "Teaching"
      url: /teaching/
    - title: "Service"
