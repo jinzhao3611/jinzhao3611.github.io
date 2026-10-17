@@ -19,3 +19,11 @@ I am an Assistant Professor of Computer Science at Saint Louis University.
 - **COSI 230b: Natural Language Annotation for Machine Learning** — a course I
   taught at Brandeis University.
   [course website](https://jinzhao3611.github.io/cosi230b/)
+
+## Sample Lecture
+
+- **Introduction to Binary Search Trees** — a sample lecture for an introductory
+  data-structures course: the BST invariant, search, insertion, in-order traversal,
+  and deletion, with pair exercises and an exit ticket.
+  [slides](/teaching/binary-search-trees.html) ·
+  [exit ticket](/teaching/bst-exit-ticket.html)
