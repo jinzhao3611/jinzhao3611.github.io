@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSCI 4750/5750 — Machine Learning · Spring 2027</title>
+<link rel="stylesheet" href="course.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <span class="brand">CSCI 4750/5750 · ML · Spring 2027</span>
+    <a href="index.html" class="active">Course Home</a>
+    <a href="schedule.html">Schedule</a>
+    <a href="assignments.html">Assignments</a>
+    <a href="project.html">Project</a>
+    <a href="syllabus-4750.html">Syllabus (4750 UG)</a>
+    <a href="syllabus-5750.html">Syllabus (5750 Grad)</a>
+    <a href="https://jinzhao3611.github.io/">Instructor</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<h1>CSCI 4750/5750: Machine Learning</h1>
+<p><strong>Saint Louis University · Spring 2027</strong></p>
+
+<table>
+  <tr><td><strong>Meetings</strong></td><td>Mon/Wed/Fri 10:00 – 10:50 AM · room to be announced</td></tr>
+  <tr><td><strong>Term</strong></td><td>Jan 11 – May 3 (last class meeting)</td></tr>
+  <tr><td><strong>Project presentations</strong></td><td>Fri Apr 30 and Mon May 3 (in class) and Wed May 5, 12:00–1:50 PM (final-exam slot) — no written final</td></tr>
+  <tr><td><strong>Instructor</strong></td><td>Jin Zhao · <a href="mailto:jin.zhao@slu.edu">jin.zhao@slu.edu</a> · Ritter Hall 309</td></tr>
+  <tr><td><strong>Office hours</strong></td><td>Mon/Wed/Fri 11:00 AM – 12:00 PM in Ritter Hall 309, and by appointment</td></tr>
+  <tr><td><strong>Listings</strong></td><td>CSCI 4750-01 (undergraduate, “Machine Learning”, CRN 23042) · CSCI 5750-01 (graduate, “Introduction to Machine Learning”, CRN 23043)</td></tr>
+  <tr><td><strong>In-class questions</strong></td><td><a href="q/">jinzhao3611.github.io/csci4750/q</a> — open this in class (or scan the QR code shown on screen)</td></tr>
+</table>
+
+<div class="notice">
+  <strong>Which syllabus applies to me?</strong> The two listings share meetings, lectures,
+  materials, the midterm, and the final project; requirements differ only in the homework,
+  where each assignment has a graduate extension (required in 5750, extra credit in 4750).
+  Undergraduates follow the <a href="syllabus-4750.html">CSCI 4750 syllabus</a>; graduate
+  students follow the <a href="syllabus-5750.html">CSCI 5750 syllabus</a>.
+</div>
+
+<h2>Course Description</h2>
+<p>
+This course introduces the field of machine learning, with emphasis on the probabilistic
+models that dominate contemporary applications: how computers learn from examples,
+<strong>classification</strong> and <strong>regression</strong>, and <strong>supervised</strong>
+and <strong>unsupervised</strong> learning, together with the statistical models and
+computational methods behind them.
+</p>
+<p>
+The course is about <strong>fundamentals</strong>: every method is derived, worked by hand on
+small numbers, and implemented from scratch before you use a library version. It is also about
+<strong>now</strong>: each lecture closes by showing where its classical idea lives in 2026–27
+industry and research — the softmax regression inside a language model, the nearest-neighbor
+search behind recommendations, the gradient boosting inside fraud detection, the diffusion
+models behind image generators, the reinforcement learning behind reasoning models. The arc
+runs from k-nearest neighbors in week one to foundation models in April, measured all semester
+on one shared benchmark, the Fashion-MNIST scoreboard.
+</p>
+<p>
+The course is lecture-oriented, with four substantial programming assignments, an in-class
+midterm, and a final project (teams of 1–4) presented on the three presentation days.
+Prerequisites: STAT 3850, CSCI 2100, and MATH 2530. Linear algebra beyond the basics is not
+assumed — Lectures 3–4 teach the math toolkit the course uses.
+</p>
+<p>See the <a href="schedule.html">class schedule</a> for the lecture-by-lecture calendar
+with readings and due dates.</p>
+
+<h2>Learning Goals</h2>
+<ol>
+  <li>Formulate a prediction problem as learning from data — features, labels, hypothesis
+      class, loss, and evaluation — and explain the difference between fitting the training
+      data and generalizing.</li>
+  <li>Derive and implement core supervised methods from scratch — nearest neighbors, linear
+      and logistic regression, regularized models, Naive Bayes, decision trees — and explain
+      how kernels, SVMs, and ensembles extend them.</li>
+  <li>Connect losses to likelihoods: explain maximum likelihood, MAP estimation, and Bayesian
+      inference, and use the probabilistic view to choose and justify a model.</li>
+  <li>Apply unsupervised methods — k-means, Gaussian mixtures with EM, PCA, embeddings, matrix
+      factorization — and interpret their output honestly.</li>
+  <li>Build, train, and debug neural networks, from backpropagation by hand to convolutional
+      networks in PyTorch, and explain how self-supervised learning, generative models, and
+      reinforcement learning power today's foundation models.</li>
+  <li>Evaluate models rigorously — cross-validation, appropriate metrics, leakage checks,
+      fairness criteria, and distribution shift — and recognize when a reported number should
+      not be trusted.</li>
+  <li>Conduct and communicate an original ML project: formulate a question, run experiments
+      against baselines, and present findings in a written report and a talk.</li>
+</ol>
+
+<h2>Grading</h2>
+<table>
+  <tr><th>Component</th><th>Weight</th><th>Notes</th></tr>
+  <tr><td>Homework (4 × 10%)</td><td>40%</td><td>From-scratch NumPy implementations + library comparison + short written analysis (graduate extensions required in 5750)</td></tr>
+  <tr><td>Midterm exam</td><td>20%</td><td>In class Wed Mar 3; closed book — every problem comes from a set released one week ahead; covers Lectures 1–19</td></tr>
+  <tr><td>Final project</td><td>30%</td><td>Teams of 1–4; proposal 5%, presentation 10% (Fri Apr 30, Mon May 3, or the Wed May 5 exam slot), report 15%</td></tr>
+  <tr><td>Participation (in-class questions)</td><td>10%</td><td>Live questions answered in class on your own device (QR code shown in class); credit for participating, not correctness; miss up to 6 sessions without penalty</td></tr>
+</table>
+<p>Homework specifications are on the <a href="assignments.html">assignments page</a>; project
+tracks, timeline, and rubrics are on the <a href="project.html">project page</a>. Full grading
+details, late policy, AI-tools policy, and university statements are in the syllabi:
+<a href="syllabus-4750.html">CSCI 4750</a> · <a href="syllabus-5750.html">CSCI 5750</a>.</p>
+
+<h2>Materials</h2>
+<p>All required materials are free.</p>
+<ul>
+  <li><strong>[ISLP]</strong> James, Witten, Hastie, Tibshirani &amp; Taylor, <em>An Introduction
+      to Statistical Learning with Applications in Python</em> (2023) —
+      <a href="https://www.statlearning.com/">statlearning.com</a></li>
+  <li><strong>[PML]</strong> Murphy, <em>Probabilistic Machine Learning: An Introduction</em>
+      (2022) — <a href="https://probml.github.io/pml-book/book1.html">probml.github.io/pml-book</a></li>
+  <li><strong>[MML]</strong> Deisenroth, Faisal &amp; Ong, <em>Mathematics for Machine
+      Learning</em> (2020) — <a href="https://mml-book.github.io/">mml-book.github.io</a></li>
+  <li><strong>[UDL]</strong> Prince, <em>Understanding Deep Learning</em> (2023) —
+      <a href="https://udlbook.github.io/udlbook/">udlbook.github.io/udlbook</a></li>
+  <li><strong>[S&amp;B]</strong> Sutton &amp; Barto, <em>Reinforcement Learning: An
+      Introduction</em>, 2nd ed. (2018) —
+      <a href="http://incompleteideas.net/book/the-book-2nd.html">incompleteideas.net</a></li>
+  <li>Papers and posts for the “Now” segments and the modern-ML lectures — listed on the
+      <a href="schedule.html">class schedule</a>.</li>
+</ul>
+<p>Assignments are sized for Google Colab. A GPU helps only in HW4 and in some projects, and
+Colab provides one.</p>
+
+<h2>Communication</h2>
+<p>Lecture slides, homework, and announcements are posted on Canvas. In-class questions run at
+<a href="q/">jinzhao3611.github.io/csci4750/q</a> — a QR code is shown in class, but you can
+bookmark that page too. For questions or concerns related to the course, email
+<a href="mailto:jin.zhao@slu.edu">jin.zhao@slu.edu</a> or come to office hours
+(Mon/Wed/Fri 11:00 AM – 12:00 PM, Ritter Hall 309).</p>
+
+</main>
+
+<footer>
+  <div class="wrap">CSCI 4750/5750 · Machine Learning · Saint Louis University ·
+  Spring 2027 · <a href="https://jinzhao3611.github.io/">Jin Zhao</a></div>
+</footer>
+
+</body>
+</html>

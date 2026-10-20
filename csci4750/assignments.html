@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assignments — CSCI 4750/5750 Machine Learning · Spring 2027</title>
+<link rel="stylesheet" href="course.css">
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="wrap">
+    <span class="brand">CSCI 4750/5750 · ML · Spring 2027</span>
+    <a href="index.html">Course Home</a>
+    <a href="schedule.html">Schedule</a>
+    <a href="assignments.html" class="active">Assignments</a>
+    <a href="project.html">Project</a>
+    <a href="syllabus-4750.html">Syllabus (4750 UG)</a>
+    <a href="syllabus-5750.html">Syllabus (5750 Grad)</a>
+    <a href="https://jinzhao3611.github.io/">Instructor</a>
+  </div>
+</nav>
+
+<main class="wrap">
+<h1 id="csci-47505750-spring-2027-homework-assignments">CSCI 4750/5750 ·
+Spring 2027 · Homework Assignments</h1>
+<p>Four graded assignments (10% each). Each pairs programming with short
+written analysis, and each ends with a brief “reflection” question
+connecting the work to the current lecture arc. Due dates are Fridays
+11:59 PM on Canvas.</p>
+<p>Design principles: <strong>build it from scratch, then use the
+library.</strong> Every assignment has starred (★) functions written in
+plain NumPy — the algorithm is the learning objective — and then a part
+where the same task runs through scikit-learn or PyTorch at full scale,
+so the judgment (which model, which metric, is this number trustworthy?)
+is the learning objective. Everything is sized for Google Colab; only
+HW4 benefits from a GPU, and it runs on CPU too.</p>
+<p><strong>One dataset all semester.</strong> Every assignment adds an
+entry to the course’s <strong>Fashion-MNIST scoreboard</strong> (same
+official test set, same protocol): k-NN in HW1, softmax regression in
+HW2, PCA + k-NN in HW3, a from-scratch MLP, a CNN, and a linear probe on
+a pretrained network in HW4. By May you have measured one problem with
+seven models you understand line by line.</p>
+<p>AI-tool tiers per the syllabus: all four assignments are Tier B
+(permitted with disclosure, but functions marked ★ must be written by
+you without AI assistance). HW4 Part 3 is Tier A: it asks you to use a
+pretrained model and permits AI assistants freely for that part.</p>
+<p>Dual listing (CSCI 4750 vs. 5750): each of HW1–HW4 includes a marked
+<strong>graduate extension (“G part”)</strong> — a short additional
+experiment or analysis tied to a primary paper. Required for CSCI 5750
+(worth 10 of the 100 points; core parts scaled to 90); optional extra
+credit for CSCI 4750 (up to +3 points). G parts are listed with each
+assignment below.</p>
+<hr />
+<p><strong>Setup:</strong> HW1’s starter ships
+<code>check_setup.py</code>, which verifies the Python environment (or
+Colab) before you write any code, and a short NumPy warm-up. The
+background survey happens as in-class questions in Lecture 1.</p>
+<h2 id="hw1-k-nn-linear-regression-generalization">HW1 — k-NN, linear
+regression &amp; generalization</h2>
+<p><strong>Out Fri Jan 15 · Due Fri Feb 5 · Covers L2–L8 · ~6–8
+h</strong></p>
+<ol type="1">
+<li><strong>k-nearest neighbors ★:</strong> vectorized pairwise
+distances, majority vote with a stated tie-break; choose k on a
+validation split; first Fashion-MNIST scoreboard entry.</li>
+<li><strong>Linear regression ★:</strong> closed form (least squares),
+the gradient, batch gradient descent, ridge in closed form, polynomial
+features, k-fold cross-validation; a real regression dataset; the
+train/validation curve over polynomial degree.</li>
+<li><strong>Written:</strong> least squares by hand, reading a learning
+curve, bias–variance in your own plot, what ridge does to the
+coefficients.</li>
+<li><strong>G part (5750):</strong> double descent with random features
+and the minimum-norm solution (Belkin et al., 2019); plot test error
+through the interpolation threshold and explain it.</li>
+</ol>
+<h2 id="hw2-classification-logistic-regression-evaluation-trees">HW2 —
+Classification: logistic regression, evaluation &amp; trees</h2>
+<p><strong>Out Fri Feb 5 · Due Fri Feb 26 · Covers L9–L17 · ~7–9
+h</strong></p>
+<ol type="1">
+<li><strong>Logistic &amp; softmax regression ★:</strong> stable
+sigmoid/softmax, cross-entropy, gradients, gradient descent with L2;
+second scoreboard entry.</li>
+<li><strong>Evaluation metrics ★:</strong> confusion matrix,
+precision/recall/F1, the ROC curve and AUC from scratch, checked against
+scikit-learn on a real imbalanced dataset.</li>
+<li><strong>Decision tree ★:</strong> Gini/entropy, best split,
+recursive growth with depth limit; then race it against scikit-learn’s
+random forest and gradient boosting on a tabular dataset.</li>
+<li><strong>Written:</strong> a logistic gradient by hand, ROC/AUC by
+hand, choosing a threshold under costs, why the forest beat the
+tree.</li>
+<li><strong>G part (5750):</strong> Gaussian Naive Bayes ★ vs. logistic
+regression learning curves — reproduce the generative-vs-discriminative
+crossover of Ng &amp; Jordan (2001).</li>
+</ol>
+<h2 id="hw3-unsupervised-learning-k-means-em-pca">HW3 — Unsupervised
+learning: k-means, EM &amp; PCA</h2>
+<p><strong>Out Mon Mar 15 · Due Fri Apr 2 · Covers L20–L24 · ~6–8
+h</strong></p>
+<ol type="1">
+<li><strong>k-means ★:</strong> assignment and update steps, k-means++
+initialization, inertia; color quantization of an image and clustering
+Fashion-MNIST.</li>
+<li><strong>Gaussian mixture via EM ★:</strong> E-step, M-step,
+log-likelihood (log-sum-exp), with the never-decreasing likelihood
+checked by test.</li>
+<li><strong>PCA ★:</strong> fit by SVD, project, reconstruct, explained
+variance; “eigen-clothes”; third scoreboard entry (PCA + k-NN).</li>
+<li><strong>Written:</strong> one k-means iteration by hand, a
+responsibility by hand, reading a scree plot, what PCA cannot see.</li>
+<li><strong>G part (5750):</strong> matrix factorization by alternating
+least squares ★ on MovieLens-100K vs. a bias-only baseline (Koren, Bell
+&amp; Volinsky, 2009).</li>
+</ol>
+<h2 id="hw4-neural-networks-backprop-from-scratch-then-pytorch">HW4 —
+Neural networks: backprop from scratch, then PyTorch</h2>
+<p><strong>Out Fri Apr 2 · Due Fri Apr 23 · Covers L26–L31 · ~7–9
+h</strong></p>
+<ol type="1">
+<li><strong>MLP from scratch ★:</strong> linear, ReLU and
+softmax-cross-entropy layers with hand-written backward passes, verified
+by gradient checking; train on Fashion-MNIST in NumPy.</li>
+<li><strong>PyTorch CNN:</strong> the same task with autograd and a
+small CNN; a training-tricks ablation (optimizer, dropout,
+normalization).</li>
+<li><strong>Foundation features (Tier A):</strong> a linear probe —
+logistic regression on features from a pretrained network — vs. training
+from scratch; the last scoreboard entry.</li>
+<li><strong>Written:</strong> one backprop step by hand, a parameter
+count, the overfit-one-batch ritual, reading the final scoreboard.</li>
+<li><strong>G part (5750):</strong> implement Adam ★ (Kingma &amp; Ba,
+2015) and compare it with SGD and momentum on the same network.</li>
+</ol>
+<h2 id="grading-logistics">Grading &amp; logistics</h2>
+<ul>
+<li>Each HW graded /100: ~70 implementation correctness (autograded
+where possible + spot checks), ~20 written analysis, ~10 reflection
+&amp; presentation quality. For CSCI 5750 these core parts are scaled to
+90 and the required G part is worth 10; for CSCI 4750 the G part is
+optional extra credit (up to +3).</li>
+<li>Late policy: 5 free late days per semester, at most 2 per
+assignment; beyond that, −5 points per additional day (partial days
+rounded down).</li>
+<li>Starter kits: one zip per assignment (starter code,
+<code>pytest</code> autograder, setup check, written questions). The
+autograder students run is the one used for grading — no hidden
+tests.</li>
+</ul>
+</main>
+
+<footer>
+  <div class="wrap">CSCI 4750/5750 · Machine Learning · Saint Louis University ·
+  Spring 2027 · <a href="https://jinzhao3611.github.io/">Jin Zhao</a></div>
+</footer>
+
+</body>
+</html>

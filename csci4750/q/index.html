@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>In-Class Questions — CSCI 4750/5750 · Spring 2027</title>
+<link rel="stylesheet" href="poll.css">
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand">CSCI 4750/5750</span>
+  <span class="sub">In-class questions</span>
+  <a href="../index.html">course home</a>
+</div>
+
+<div class="student-wrap">
+  <div id="app">
+    <div class="card"><p class="muted">Loading…</p></div>
+  </div>
+  <p class="tiny">Responses are recorded with your name and SLU email for participation
+  credit. One submission per question — answers can't be changed after you submit.
+  Free-text answers may be shown on the classroom screen without your name.</p>
+</div>
+
+<script type="module">
+import { firebaseConfig, COURSE, configured } from "./firebase-config.js";
+
+const app = document.getElementById("app");
+
+if (!configured) {
+  app.innerHTML = `<div class="setup-warn"><strong>Not configured yet.</strong>
+    The instructor needs to paste the Firebase project config into
+    <code>firebase-config.js</code>. See that file for setup steps.</div>`;
+} else {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const { getAuth, signInAnonymously, onAuthStateChanged } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, serverTimestamp } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+  const fb = initializeApp(firebaseConfig);
+  const auth = getAuth(fb);
+  const db = getFirestore(fb);
+
+  const PROFILE_KEY = "csci4750-poll-profile";
+  let uid = null;
+  let profile = null;
+  try { profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null"); } catch { profile = null; }
+
+  let qlist = [];              // all questions
+  let liveSet = null;          // the set students may answer (state/control)
+  let idx = 0;                 // position within the live set
+  let currentQid = null;
+  let question = null;
+  let myDocs = new Map();      // qid → my recorded answer (for ✓ / lock / start position)
+  let jumpedFor = null;        // set we already auto-positioned for
+  let unsubQ = null;
+  let draftText = "";
+  let selectedChoice = null;   // MC pick before submitting
+  let selectedMulti = new Set(); // select-all picks before submitting
+
+  function esc(s) {
+    return String(s ?? "").replace(/[&<>"']/g,
+      c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  // A question's set: explicit field, else the id prefix ("lec01-q3" → "lec01").
+  const qSet = (q) => q.set ?? String(q.id).split("-")[0];
+  const setList = () => liveSet ? qlist.filter(q => qSet(q) === liveSet) : [];
+
+  // My recorded answer for the current question (locks it once present).
+  const myResponse = () => myDocs.get(currentQid) ?? null;
+
+  function render() {
+    if (!profile) { renderProfileForm(); return; }
+    const list = setList();
+    if (!liveSet || !list.length || !currentQid || !question) {
+      app.innerHTML = `
+        <div class="card">
+          <p class="prompt">Waiting for this week's questions…</p>
+          <p class="muted">Keep this page open — it updates automatically when the
+          instructor posts a question set.</p>
+        </div>
+        ${whoAmI()}`;
+      wireChangeLink();
+      return;
+    }
+    if (question.type === "mc") renderMCQuestion();
+    else if (question.type === "multi") renderMultiQuestion();
+    else renderTextQuestion();
+    wireChangeLink(); wireNav();
+  }
+
+  function nav() {
+    const list = setList();
+    if (list.length === 0) return "";
+    const done = myResponse() != null;
+    return `<div class="browse-nav">
+      <button class="btn secondary" id="nav-prev" ${idx === 0 ? "disabled" : ""}>‹ Back</button>
+      <span class="pos">Question ${idx + 1} of ${list.length}${done ? " ✓" : ""}</span>
+      <button class="btn secondary" id="nav-next" ${idx >= list.length - 1 ? "disabled" : ""}>Next ›</button>
+    </div>`;
+  }
+
+  function wireNav() {
+    const p = document.getElementById("nav-prev"), n = document.getElementById("nav-next");
+    if (p) p.onclick = () => { if (idx > 0) { idx--; sync(); } };
+    if (n) n.onclick = () => { if (idx < setList().length - 1) { idx++; sync(); } };
+  }
+
+  function whoAmI() {
+    return `<p class="tiny">Answering as <strong>${esc(profile.name)}</strong>
+      (${esc(profile.email)}) · <a href="#" id="change-me">change</a></p>`;
+  }
+
+  function wireChangeLink() {
+    const a = document.getElementById("change-me");
+    if (a) a.onclick = (e) => { e.preventDefault(); profile = null; render(); };
+  }
+
+  function renderProfileForm() {
+    app.innerHTML = `
+      <div class="card">
+        <p class="prompt">Join in-class questions</p>
+        <label for="f-name">Name</label>
+        <input class="field" id="f-name" autocomplete="name" placeholder="First Last">
+        <label for="f-email">SLU email</label>
+        <input class="field" id="f-email" type="email" autocomplete="email" placeholder="you@slu.edu">
+        <p class="tiny">Used only for participation credit.</p>
+        <button class="btn" id="f-join">Join</button>
+        <p class="muted" id="f-err"></p>
+      </div>`;
+    document.getElementById("f-join").onclick = () => {
+      const name = document.getElementById("f-name").value.trim();
+      const email = document.getElementById("f-email").value.trim().toLowerCase();
+      const err = document.getElementById("f-err");
+      if (!name) { err.textContent = "Please enter your name."; return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { err.textContent = "Please enter a valid email."; return; }
+      if (!email.endsWith("@slu.edu")) { err.textContent = "Please use your @slu.edu email."; return; }
+      profile = { name, email };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+      render();
+    };
+  }
+
+  async function submit(fields) {
+    await setDoc(doc(db, "courses", COURSE, "responses", `${currentQid}_${uid}`), {
+      qid: currentQid, uid,
+      name: profile.name, email: profile.email,
+      ts: serverTimestamp(),
+      ...fields,
+    });
+  }
+
+  function renderMCQuestion() {
+    const mine = myResponse();
+    const locked = mine != null;
+    app.innerHTML = `
+      ${nav()}
+      <div class="card">
+        <p class="prompt">${esc(question.prompt)}</p>
+        ${question.note ? `<p class="tiny">${esc(question.note)}</p>` : ""}
+        <div id="choices">
+          ${question.choices.map((c, i) => {
+            const sel = locked ? mine.choice === i : selectedChoice === i;
+            return `<button class="choice-btn${sel ? " selected" : ""}"
+                      data-i="${i}" ${locked ? "disabled" : ""}>${esc(c)}</button>`;
+          }).join("")}
+        </div>
+        ${locked
+          ? `<p class="ok-badge">✓ Answer recorded</p>
+             <p class="tiny">Results are shown on the classroom screen.</p>`
+          : `<button class="btn" id="mc-send" ${selectedChoice == null ? "disabled" : ""}>Submit answer</button>
+             <p class="tiny">One submission — you can't change it after submitting.</p>`}
+      </div>
+      ${whoAmI()}`;
+    if (!locked) {
+      for (const b of app.querySelectorAll(".choice-btn")) {
+        b.onclick = () => { selectedChoice = Number(b.dataset.i); render(); };
+      }
+      const send = document.getElementById("mc-send");
+      if (send) send.onclick = () => {
+        if (selectedChoice == null) return;
+        submit({ choice: selectedChoice }).catch(showErr);
+      };
+    }
+  }
+
+  // Select all that apply: taps toggle choices; submit records the index list.
+  function renderMultiQuestion() {
+    const mine = myResponse();
+    const locked = mine != null;
+    const picked = locked ? new Set(mine.choices ?? []) : selectedMulti;
+    app.innerHTML = `
+      ${nav()}
+      <div class="card">
+        <p class="prompt">${esc(question.prompt)}</p>
+        ${question.note ? `<p class="tiny">${esc(question.note)}</p>` : ""}
+        <p class="tiny">Select all that apply.</p>
+        <div id="choices">
+          ${question.choices.map((c, i) => {
+            const sel = picked.has(i);
+            return `<button class="choice-btn${sel ? " selected" : ""}"
+                      data-i="${i}" ${locked ? "disabled" : ""}>${esc(c)}</button>`;
+          }).join("")}
+        </div>
+        ${locked
+          ? `<p class="ok-badge">✓ Answer recorded</p>
+             <p class="tiny">Results are shown on the classroom screen.</p>`
+          : `<button class="btn" id="multi-send" ${picked.size === 0 ? "disabled" : ""}>Submit answer</button>
+             <p class="tiny">One submission — you can't change it after submitting.</p>`}
+      </div>
+      ${whoAmI()}`;
+    if (!locked) {
+      for (const b of app.querySelectorAll(".choice-btn")) {
+        b.onclick = () => {
+          const i = Number(b.dataset.i);
+          if (selectedMulti.has(i)) selectedMulti.delete(i);
+          else selectedMulti.add(i);
+          render();
+        };
+      }
+      const send = document.getElementById("multi-send");
+      if (send) send.onclick = () => {
+        if (selectedMulti.size === 0) return;
+        submit({ choices: [...selectedMulti].sort((a, b) => a - b) }).catch(showErr);
+      };
+    }
+  }
+
+  function renderTextQuestion() {
+    const mine = myResponse();
+    const locked = mine != null && (mine.text ?? "").trim() !== "";
+    app.innerHTML = `
+      ${nav()}
+      <div class="card">
+        <p class="prompt">${esc(question.prompt)}</p>
+        ${question.note ? `<p class="tiny">${esc(question.note)}</p>` : ""}
+        <textarea class="free-text" id="ft" maxlength="500" ${locked ? "readonly" : ""}
+          placeholder="Type your answer…">${esc(locked ? mine.text : draftText)}</textarea>
+        ${locked
+          ? `<p class="ok-badge">✓ Answer recorded</p>
+             <p class="tiny">Responses are shown anonymously on the classroom screen.</p>`
+          : `<button class="btn" id="ft-send">Submit</button>
+             <p class="tiny">One submission — you can't change it after submitting.</p>`}
+      </div>
+      ${whoAmI()}`;
+    if (!locked) {
+      const ta = document.getElementById("ft");
+      ta.oninput = () => { draftText = ta.value; };
+      document.getElementById("ft-send").onclick = () => {
+        const text = ta.value.trim();
+        if (!text) return;
+        submit({ text }).then(() => { draftText = ""; }).catch(showErr);
+      };
+    }
+  }
+
+  function showErr(e) {
+    console.error(e);
+    const msg = e.code === "permission-denied"
+      ? "Your answer for this question is already recorded — one submission per question."
+      : `Couldn't save your answer — check your connection and try again. (${esc(e.code || e.message)})`;
+    app.insertAdjacentHTML("afterbegin", `<div class="setup-warn">${msg}</div>`);
+  }
+
+  function watchQuestion(qid) {
+    if (unsubQ) { unsubQ(); unsubQ = null; }
+    question = null; draftText = ""; selectedChoice = null; selectedMulti = new Set();
+    if (!qid) { render(); return; }
+    unsubQ = onSnapshot(doc(db, "courses", COURSE, "questions", qid), (snap) => {
+      question = snap.exists() ? snap.data() : null;
+      render();
+    });
+  }
+
+  // Point the page at the question for the current position in the live set.
+  function sync() {
+    const list = setList();
+    if (idx >= list.length) idx = Math.max(0, list.length - 1);
+    const qid = list[idx]?.id ?? null;
+    if (qid !== currentQid) {
+      currentQid = qid;
+      watchQuestion(qid);
+      if (qid) { question = list[idx] ?? null; render(); }
+    } else {
+      render();
+    }
+  }
+
+  // On first load of a set, start at the first question not yet answered here.
+  function maybeJump() {
+    if (!liveSet || jumpedFor === liveSet) return;
+    const list = setList();
+    if (!list.length) return;
+    const i = list.findIndex(q => !myDocs.has(q.id));
+    idx = i >= 0 ? i : 0;
+    jumpedFor = liveSet;
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (!user) return;
+    uid = user.uid;
+    onSnapshot(collection(db, "courses", COURSE, "questions"), (snap) => {
+      qlist = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) =>
+        qSet(a) === qSet(b) ? (a.order ?? 0) - (b.order ?? 0) : (qSet(a) < qSet(b) ? -1 : 1));
+      maybeJump(); sync();
+    });
+    onSnapshot(
+      query(collection(db, "courses", COURSE, "responses"), where("uid", "==", uid)),
+      (snap) => {
+        myDocs = new Map(snap.docs.map(d => [d.data().qid, d.data()]));
+        maybeJump(); sync();
+      });
+    onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {
+      const prev = liveSet;
+      liveSet = snap.exists() ? (snap.data().set ?? null) : null;
+      if (liveSet !== prev) { idx = 0; jumpedFor = null; }
+      maybeJump(); sync();
+    }, (e) => {
+      app.innerHTML = `<div class="setup-warn">Couldn't connect (${esc(e.code)}).
+        If this persists, tell the instructor.</div>`;
+    });
+    render();
+  });
+
+  signInAnonymously(auth).catch((e) => {
+    app.innerHTML = `<div class="setup-warn">Sign-in failed (${esc(e.code)}).
+      Anonymous sign-in may not be enabled in Firebase yet.</div>`;
+  });
+}
+</script>
+
+</body>
+</html>

@@ -13,6 +13,10 @@ I am an Assistant Professor of Computer Science at Saint Louis University.
 - **CSCI 4845/5845: Natural Language Processing** (Saint Louis University, Fall 2026) —
   a comprehensive tour of NLP from n-gram language models to the LLM era.
   [course website](/csci4845/)
+- **CSCI 4750/5750: Machine Learning** (Saint Louis University, Spring 2027) —
+  the fundamentals of machine learning, from k-nearest neighbors to foundation models,
+  each idea connected to where it lives in industry and research today.
+  [course website](/csci4750/)
 
 ## Past Course Materials
 

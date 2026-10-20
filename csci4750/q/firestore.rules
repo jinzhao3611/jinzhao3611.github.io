@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isInstructor() {
+      return request.auth != null
+        && request.auth.token.email in ['jinzhao3611@gmail.com'];
+    }
+
+    // Which question is currently live (instructor writes, everyone reads).
+    match /courses/{course}/state/{docId} {
+      allow read: if request.auth != null;
+      allow write: if isInstructor();
+    }
+
+    // Question bank (instructor writes, everyone reads).
+    match /courses/{course}/questions/{qid} {
+      allow read: if request.auth != null;
+      allow write: if isInstructor();
+    }
+
+    // Responses: doc id is "{qid}_{uid}", so each student can only create
+    // their own answer to a question — and only once (create, no update:
+    // answers lock after submission). Students can read only their own
+    // responses; the full set (projected results, exports) is instructor-only.
+    match /courses/{course}/responses/{rid} {
+      allow read: if isInstructor()
+        || (request.auth != null && resource.data.uid == request.auth.uid);
+      allow create: if isInstructor()
+        || (request.auth != null
+            && request.resource.data.uid == request.auth.uid
+            && rid == request.resource.data.qid + '_' + request.auth.uid);
+      allow update, delete: if isInstructor();
+    }
+  }
+}

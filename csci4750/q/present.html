@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presenter — In-Class Questions · CSCI 4750/5750</title>
+<link rel="stylesheet" href="poll.css">
+<script src="qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand">CSCI 4750/5750</span>
+  <span class="sub">In-class questions · presenter</span>
+  <a href="index.html" target="_blank" rel="noopener">student view</a>
+</div>
+
+<div id="app" class="present-grid">
+  <div class="card"><p class="muted">Loading…</p></div>
+</div>
+
+<script type="module">
+import { firebaseConfig, COURSE, INSTRUCTOR_EMAILS, STUDENT_URL, configured } from "./firebase-config.js";
+import { renderMC, renderMulti, renderTextWall } from "./poll-ui.js";
+
+const app = document.getElementById("app");
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g,
+    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+if (!configured) {
+  app.innerHTML = `<div class="setup-warn" style="grid-column:1/-1"><strong>Not configured
+    yet.</strong> Paste your Firebase project config into <code>firebase-config.js</code> —
+    setup steps are in that file.</div>`;
+} else {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js");
+  const { getFirestore, doc, setDoc, onSnapshot, collection, query, where, getDocs, serverTimestamp } =
+    await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+  const fb = initializeApp(firebaseConfig);
+  const auth = getAuth(fb);
+  const db = getFirestore(fb);
+
+  let me = null;
+  let questions = [];
+  let liveSet = null;    // the set students can currently answer (state/control)
+  let viewSet = null;    // the set shown on this screen (sidebar dropdown)
+  let responses = [];    // responses for the questions of viewSet
+  let unsubR = null;
+
+  const isInstructor = (u) => !!u && !u.isAnonymous && INSTRUCTOR_EMAILS.includes(u.email);
+
+  // A question's set: explicit field, else the id prefix ("lec01-q3" → "lec01").
+  const qSet = (q) => q.set ?? String(q.id).split("-")[0];
+  const setNames = () => [...new Set(questions.map(qSet))].sort();
+  const inView = () => questions.filter(q => qSet(q) === viewSet);
+
+  function renderSignIn(msg) {
+    app.innerHTML = `
+      <div class="card" style="grid-column:1/-1;max-width:520px">
+        <p class="prompt">Presenter sign-in</p>
+        ${msg ? `<p class="muted">${esc(msg)}</p>` : ""}
+        <button class="btn" id="gsi">Sign in with Google</button>
+        <p class="tiny">Only ${esc(INSTRUCTOR_EMAILS.join(", "))} can control questions.</p>
+      </div>`;
+    document.getElementById("gsi").onclick = () =>
+      signInWithPopup(auth, new GoogleAuthProvider()).catch(e => renderSignIn(e.code));
+  }
+
+  function shell() {
+    app.innerHTML = `
+      <div class="sidebar">
+        <div class="card">
+          <p class="muted"><strong>Question set</strong></p>
+          <select class="field" id="set-pick"></select>
+          <button class="btn" id="btn-live" style="width:100%"></button>
+          <p class="tiny" id="live-hint" style="margin:0.25rem 0 0.55rem"></p>
+          <button class="btn secondary" id="btn-add-set" style="width:100%">Add question set…</button>
+          <div id="add-set-box" style="display:none">
+            <textarea class="free-text" id="add-set-text" spellcheck="false"
+              placeholder="set: lec02&#10;mc: Which k gives the smoothest k-NN decision boundary?&#10;- k = 1&#10;- k = 5&#10;- k = 50&#10;text: One thing from Monday that is still unclear?"></textarea>
+            <p class="tiny">First line “set: lec02”, then “mc: prompt” (single choice) or
+            “multi: prompt” (select all) with “- choice” lines, or “text: prompt”.
+            Optional “note: hint” after a question. Ids and order are automatic.</p>
+            <button class="btn" id="btn-add-go" style="width:100%">Add set</button>
+          </div>
+          <button class="btn secondary" id="btn-csv" style="width:100%">Export responses CSV</button>
+          <p class="tiny">Signed in as ${esc(me.email)} · <a href="#" id="signout">sign out</a></p>
+        </div>
+        <div class="card qr-box">
+          <p class="muted"><strong>Students join at</strong></p>
+          <p class="join-url">jinzhao3611.github.io/csci4750/q</p>
+          <div class="qr" id="qr"></div>
+        </div>
+      </div>
+      <div class="stage" id="stage">
+        <div class="card"><p class="muted">Loading…</p></div>
+      </div>`;
+    document.getElementById("set-pick").onchange = (e) => {
+      viewSet = e.target.value || null;
+      watchSetResponses(); renderAll();
+    };
+    document.getElementById("btn-live").onclick = makeLive;
+    document.getElementById("btn-add-set").onclick = () => {
+      const box = document.getElementById("add-set-box");
+      box.style.display = box.style.display === "none" ? "" : "none";
+    };
+    document.getElementById("btn-add-go").onclick = addSet;
+    document.getElementById("btn-csv").onclick = exportCSV;
+    document.getElementById("signout").onclick = (e) => { e.preventDefault(); signOut(auth); };
+    new QRCode(document.getElementById("qr"),
+      { text: STUDENT_URL, width: 210, height: 210, correctLevel: QRCode.CorrectLevel.M });
+    renderAll();
+  }
+
+  function renderSetPick() {
+    const sel = document.getElementById("set-pick");
+    if (!sel) return;
+    const names = setNames();
+    if (!viewSet || !names.includes(viewSet)) {
+      viewSet = (liveSet && names.includes(liveSet)) ? liveSet : (names.at(-1) ?? null);
+    }
+    sel.innerHTML = names.length
+      ? names.map(s => `<option value="${esc(s)}"${s === viewSet ? " selected" : ""}>${esc(s)}${s === liveSet ? " (live)" : ""}</option>`).join("")
+      : `<option value="">(no questions yet)</option>`;
+  }
+
+  function renderLiveBtn() {
+    const b = document.getElementById("btn-live");
+    const hint = document.getElementById("live-hint");
+    if (b) {
+      if (!viewSet) { b.textContent = "Make set live"; b.disabled = true; }
+      else if (viewSet === liveSet) { b.textContent = `“${viewSet}” is live`; b.disabled = true; }
+      else { b.textContent = `Make “${viewSet}” live for students`; b.disabled = false; }
+    }
+    if (hint) hint.textContent = liveSet
+      ? `Students can open and answer “${liveSet}” anytime — one submission per question.`
+      : "No set is live yet — students see a waiting screen.";
+  }
+
+  // The projected view: every question in the selected set, all results live.
+  function renderStage() {
+    const stage = document.getElementById("stage");
+    if (!stage) return;
+    const qs = inView();
+    if (!qs.length) {
+      stage.innerHTML = `<div class="card"><p class="muted">No questions yet —
+        use “Add question set…” in the sidebar.</p></div>`;
+      return;
+    }
+    const people = new Set(responses.map(r => (r.email ?? r.uid ?? "").toLowerCase())).size;
+    stage.innerHTML = `
+      <p class="muted stage-head"><span class="count-pill">${people} student${people === 1 ? "" : "s"} answered</span>
+        &nbsp;Set “${esc(viewSet)}”${viewSet === liveSet ? " · live" : " · not live"}</p>
+      <div class="stage-grid">
+        ${qs.map((q, i) => `
+          <div class="card">
+            <p class="prompt">${i + 1}. ${esc(q.prompt)}</p>
+            ${q.note ? `<p class="tiny">${esc(q.note)}</p>` : ""}
+            <div class="results" id="res-${esc(q.id)}" aria-live="polite"></div>
+          </div>`).join("")}
+      </div>`;
+    for (const q of qs) {
+      const el = document.getElementById(`res-${q.id}`);
+      const rs = responses.filter(r => r.qid === q.id);
+      if (q.type === "mc") renderMC(el, q, rs);
+      else if (q.type === "multi") renderMulti(el, q, rs);
+      else renderTextWall(el, rs);
+    }
+  }
+
+  function renderAll() { renderSetPick(); renderLiveBtn(); renderStage(); }
+
+  function makeLive() {
+    if (!viewSet) return;
+    setDoc(doc(db, "courses", COURSE, "state", "control"),
+      { set: viewSet, updatedAt: serverTimestamp() }).catch(alertErr);
+  }
+
+  function watchSetResponses() {
+    if (unsubR) { unsubR(); unsubR = null; }
+    responses = [];
+    const ids = inView().map(q => q.id);
+    if (!ids.length) { renderStage(); return; }
+    const src = ids.length <= 30
+      ? query(collection(db, "courses", COURSE, "responses"), where("qid", "in", ids))
+      : collection(db, "courses", COURSE, "responses");
+    unsubR = onSnapshot(src, (snap) => {
+      responses = snap.docs.map(d => d.data()).filter(r => ids.includes(r.qid));
+      renderStage();
+    });
+  }
+
+  // Paste format: "set: lec02", then "mc: prompt" (single choice) or
+  // "multi: prompt" (select all) with "- choice" lines, or "text: prompt".
+  // An optional "note: hint" after a question shows as a small line under
+  // its prompt. Ids (lec02-q1, …) and order are assigned automatically.
+  // An unprefixed line continues the previous prompt/note/choice — copying
+  // from a terminal or editor hard-wraps long lines mid-sentence.
+  function parseSetText(txt) {
+    const lines = String(txt).split("\n").map(l => l.trim());
+    let set = null;
+    const qs = [];
+    let extend = null; // appends a continuation line to the last parsed value
+    for (const line of lines) {
+      if (!line) continue;
+      const mSet = line.match(/^set\s*:\s*(.+)$/i);
+      const mMc = line.match(/^mc\s*:\s*(.+)$/i);
+      const mMulti = line.match(/^multi\s*:\s*(.+)$/i);
+      const mText = line.match(/^text\s*:\s*(.+)$/i);
+      const mNote = line.match(/^note\s*:\s*(.+)$/i);
+      const mChoice = line.match(/^-\s*(.+)$/);
+      if (mSet) { set = mSet[1].trim().toLowerCase(); extend = null; }
+      else if (mMc) {
+        qs.push({ type: "mc", prompt: mMc[1].trim(), choices: [] });
+        extend = (s) => { qs.at(-1).prompt += " " + s; };
+      }
+      else if (mMulti) {
+        qs.push({ type: "multi", prompt: mMulti[1].trim(), choices: [] });
+        extend = (s) => { qs.at(-1).prompt += " " + s; };
+      }
+      else if (mText) {
+        qs.push({ type: "text", prompt: mText[1].trim() });
+        extend = (s) => { qs.at(-1).prompt += " " + s; };
+      }
+      else if (mNote) {
+        const q = qs.at(-1);
+        if (!q) throw new Error(`A "note:" line must follow a question: "${line}"`);
+        q.note = mNote[1].trim();
+        extend = (s) => { q.note += " " + s; };
+      }
+      else if (mChoice) {
+        const q = qs.at(-1);
+        if (!q || (q.type !== "mc" && q.type !== "multi")) {
+          throw new Error(`A "- choice" line must follow an "mc:" or "multi:" question: "${line}"`);
+        }
+        q.choices.push(mChoice[1].trim());
+        extend = (s) => { q.choices[q.choices.length - 1] += " " + s; };
+      }
+      else if (extend) extend(line);
+      else throw new Error(`Couldn't parse line: "${line}"`);
+    }
+    if (!set) throw new Error('Missing a "set: lecNN" line.');
+    if (!/^[a-z0-9_-]+$/.test(set)) throw new Error(`Set name "${set}" — use letters, digits, and dashes only.`);
+    if (!qs.length) throw new Error("No questions found.");
+    for (const q of qs) {
+      if ((q.type === "mc" || q.type === "multi") && q.choices.length < 2) {
+        throw new Error(`Choice question "${q.prompt}" needs at least 2 choices.`);
+      }
+    }
+    return { set, docs: qs.map((q, i) => ({ ...q, id: `${set}-q${i + 1}`, order: i + 1, set })) };
+  }
+
+  async function addSet() {
+    const ta = document.getElementById("add-set-text");
+    try {
+      const { set, docs } = parseSetText(ta.value);
+      for (const q of docs) {
+        await setDoc(doc(db, "courses", COURSE, "questions", q.id), q);
+      }
+      ta.value = "";
+      document.getElementById("add-set-box").style.display = "none";
+      viewSet = set;
+      watchSetResponses(); renderAll();
+      alert(`Added set "${set}" (${docs.length} question${docs.length === 1 ? "" : "s"}). ` +
+            `Click "Make “${set}” live for students" when you're ready.`);
+    } catch (e) { alert(e.message || e.code || String(e)); }
+  }
+
+  function downloadCSV(rows, filename) {
+    const csv = "﻿" + rows.map(row =>
+      row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\r\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  async function exportCSV() {
+    try {
+      const qs = new Map(questions.map(q => [q.id, q]));
+      const snap = await getDocs(collection(db, "courses", COURSE, "responses"));
+      const rows = [["timestamp", "set", "qid", "question", "type", "name", "email", "answer"]];
+      for (const d of snap.docs) {
+        const r = d.data();
+        const q = qs.get(r.qid);
+        const answer = q?.type === "mc"
+          ? (q.choices?.[r.choice] ?? String(r.choice ?? ""))
+          : q?.type === "multi"
+            ? (r.choices ?? []).map(i => q.choices?.[i] ?? String(i)).join("; ")
+            : (r.text ?? "");
+        rows.push([
+          r.ts?.toDate?.()?.toISOString?.() ?? "",
+          q ? qSet(q) : String(r.qid ?? "").split("-")[0],
+          r.qid ?? "", q?.prompt ?? "", q?.type ?? "",
+          r.name ?? "", r.email ?? "", answer,
+        ]);
+      }
+      downloadCSV(rows, `csci4750-responses-${new Date().toISOString().slice(0, 10)}.csv`);
+    } catch (e) { alertErr(e); }
+  }
+
+  function alertErr(e) { console.error(e); alert(`Error: ${e.code || e.message}`); }
+
+  onAuthStateChanged(auth, (user) => {
+    if (!isInstructor(user)) {
+      me = null;
+      renderSignIn(user ? `${user.email ?? "This account"} is not an instructor account.` : "");
+      return;
+    }
+    me = user;
+    shell();
+    onSnapshot(collection(db, "courses", COURSE, "questions"), (snap) => {
+      questions = snap.docs.map(d => d.data()).sort((a, b) =>
+        qSet(a) === qSet(b) ? (a.order ?? 0) - (b.order ?? 0) : (qSet(a) < qSet(b) ? -1 : 1));
+      renderSetPick(); watchSetResponses(); renderAll();
+    });
+    onSnapshot(doc(db, "courses", COURSE, "state", "control"), (snap) => {
+      liveSet = snap.exists() ? (snap.data().set ?? null) : null;
+      renderAll();
+    });
+  });
+}
+</script>
+
+</body>
+</html>
