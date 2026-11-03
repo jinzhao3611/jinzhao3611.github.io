@@ -71,5 +71,4 @@ across cultures and media systems.
 
 ---
 
-Interested in working on these problems? See [TRACE AI Lab](/lab/contact.html)
-— I am recruiting Ph.D. students and research assistants.
+Interested in this work? Learn more about [TRACE AI Lab](/lab/).
