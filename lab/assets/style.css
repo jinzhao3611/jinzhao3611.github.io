@@ -138,11 +138,11 @@ h2{font-size:51px;line-height:1.05;letter-spacing:-.03em;margin-bottom:18px}
 .research-example{padding:23px 26px;background:#edf1e6;margin-top:26px;border-left:2px solid #82956b}
 .research-example .micro{color:#536848;font-size:9px}
 .research-example p{font-family:var(--serif);font-size:25px;color:var(--ink);line-height:1.4;margin:12px 0 0}
-.computing-allocation{margin-top:28px}
-.computing-allocation+.computing-allocation{border-top:1px solid var(--line);padding-top:26px}
-.computing-allocation .allocation-year{font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--muted);margin-bottom:10px}
-.computing-allocation h3{font-family:var(--serif);font-size:29px;line-height:1.2;letter-spacing:-.02em;margin-bottom:14px}
-.computing-allocation>p:last-child{margin-bottom:0}
+.support-entry{margin-top:28px}
+.support-entry+.support-entry{border-top:1px solid var(--line);padding-top:26px}
+.support-entry .support-year{font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--muted);margin-bottom:10px}
+.support-entry h3{font-family:var(--serif);font-size:29px;line-height:1.2;letter-spacing:-.02em;margin-bottom:14px}
+.support-entry>p:last-child{margin-bottom:0}
 .reading-note{border-top:1px solid var(--line)}
 .section-mini-heading{display:flex;justify-content:space-between;gap:20px;align-items:center;border-top:1px solid var(--line);padding-top:25px;padding-bottom:28px}
 .section-mini-heading h2{font-family:var(--sans);font-size:15px;font-weight:550;margin:0;letter-spacing:0}
