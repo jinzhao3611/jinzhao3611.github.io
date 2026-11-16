@@ -121,10 +121,10 @@ author:
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
       url: "https://www.linkedin.com/in/jin-zhao-893290338/"
-    - label: "Bilibili"
-      # MM 4.19.3 ships Font Awesome 5, which has no Bilibili brand icon; using a video icon.
-      icon: "fas fa-fw fa-play-circle"
-      url: "https://space.bilibili.com/1039604226"
+    # Temporarily hidden; uncomment this entry to restore the Bilibili link.
+    # - label: "Bilibili"
+    #   icon: "fas fa-fw fa-play-circle"
+    #   url: "https://space.bilibili.com/1039604226"
 
 
 # Reading Files
